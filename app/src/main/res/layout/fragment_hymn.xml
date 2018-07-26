@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/vol_up_button"
+            android:text="@string/up"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/vol_down_button"
+            android:text="@string/down"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="24dp"
+            android:paddingLeft="5dp"
+            android:gravity="center_vertical"
+            android:id="@+id/vol_text"
+            android:text="@string/hymn_vol_label"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hymn_vol_value"
+            android:paddingLeft="5dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:text="0"
+            android:textSize="24dp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

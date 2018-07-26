@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Allen Genisys Remote</string>
+    <string name="title_home">Home</string>
+    <string name="hymn_title_label">Hymn Title</string>
+    <string name="hymn_vol_label">Volume:</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+</resources>
