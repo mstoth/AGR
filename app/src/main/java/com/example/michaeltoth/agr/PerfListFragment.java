@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -27,10 +28,20 @@ public class PerfListFragment extends Fragment {
     }
 
     private class PerfHolder extends RecyclerView.ViewHolder {
+        private TextView mTitleView;
+        private Hymn mPerf;
 
         public PerfHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_perf,parent,false));
+            mTitleView = itemView.findViewById(R.id.perf_title);
+
         }
+
+        public void bind(Hymn hymn) {
+            mPerf = hymn;
+            mTitleView.setText(hymn.getTitle());
+        }
+
 
     }
 
@@ -57,7 +68,8 @@ public class PerfListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull PerfListFragment.PerfHolder hymnHolder, int i) {
-
+            Hymn mHymn = mHymns.get(i);
+            hymnHolder.bind(mHymn);
         }
 
         @Override

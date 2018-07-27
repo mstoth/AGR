@@ -28,19 +28,23 @@ public class HymnBook {
             hymn.setTitle("Hymn #" + i);
             mHymns.add(hymn);
             Hymn perf = new Hymn();
-            hymn.setTitle("Performance #" + i);
-            mPerfs.add(hymn);
+            perf.setTitle("Performance #" + i);
+            mPerfs.add(perf);
             Hymn rec = new Hymn();
             rec.setTitle("Selection #" + i);
-            mPerfs.add(rec);
+            mRecs.add(rec);
         }
     }
 
     public List<Hymn> getHymns() {
         return mHymns;
     }
-    public List<Hymn> getmPerfs() { return mPerfs; }
-    public List<Hymn> getRecs() { return mRecs; }
+    public List<Hymn> getmPerfs() {
+        return mPerfs;
+    }
+    public List<Hymn> getRecs() {
+        return mRecs;
+    }
 
 
 }

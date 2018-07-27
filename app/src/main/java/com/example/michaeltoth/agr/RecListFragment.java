@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -27,15 +28,23 @@ public class RecListFragment extends Fragment {
     }
 
     private class RecHolder extends RecyclerView.ViewHolder {
+        private TextView mTitleView;
+        private Hymn mHymn;
 
         public RecHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_rec,parent,false));
+            mTitleView = itemView.findViewById(R.id.rec_title);
+        }
+
+        public void bind(Hymn hymn) {
+            mHymn = hymn;
+            mTitleView.setText(hymn.getTitle());
         }
     }
 
     private void updateUI() {
         HymnBook hymnBook = HymnBook.get(getActivity());
-        List<Hymn> hymns  = hymnBook.getmPerfs();
+        List<Hymn> hymns  = hymnBook.getRecs();
         mAdapter = new RecListFragment.RecAdapter(hymns);
         mHymnRecyclerView.setAdapter(mAdapter);
     }
@@ -56,7 +65,8 @@ public class RecListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecListFragment.RecHolder hymnHolder, int i) {
-
+            Hymn hymn = mHymns.get(i);
+            hymnHolder.bind(hymn);
         }
 
         @Override
