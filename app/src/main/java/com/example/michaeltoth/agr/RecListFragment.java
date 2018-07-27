@@ -9,14 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
-
-public class HymnListFragment extends Fragment {
+public class RecListFragment extends Fragment {
     private RecyclerView mHymnRecyclerView;
-    private HymnAdapter mAdapter;
+    private RecListFragment.RecAdapter mAdapter;
 
     @Nullable
     @Override
@@ -28,47 +26,37 @@ public class HymnListFragment extends Fragment {
         return view;
     }
 
-    private class HymnHolder extends RecyclerView.ViewHolder {
-        private TextView mTitleView;
-        private Hymn mHymn;
+    private class RecHolder extends RecyclerView.ViewHolder {
 
-        public HymnHolder(LayoutInflater inflater,ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_hymn,parent,false));
-            mTitleView = itemView.findViewById(R.id.hymn_title);
-        }
-
-        public void bind(Hymn hymn) {
-            mHymn = hymn;
-            mTitleView.setText(hymn.getTitle());
+        public RecHolder(LayoutInflater inflater,ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_rec,parent,false));
         }
     }
 
     private void updateUI() {
         HymnBook hymnBook = HymnBook.get(getActivity());
-        List<Hymn> hymns  = hymnBook.getHymns();
-        mAdapter = new HymnAdapter(hymns);
+        List<Hymn> hymns  = hymnBook.getmPerfs();
+        mAdapter = new RecListFragment.RecAdapter(hymns);
         mHymnRecyclerView.setAdapter(mAdapter);
     }
 
-    private class HymnAdapter extends RecyclerView.Adapter<HymnHolder> {
+    private class RecAdapter extends RecyclerView.Adapter<RecListFragment.RecHolder> {
         private List<Hymn> mHymns;
 
-        public HymnAdapter(List<Hymn> hymns) {
-
+        public RecAdapter(List<Hymn> hymns) {
             mHymns = hymns;
         }
 
         @NonNull
         @Override
-        public HymnHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        public RecListFragment.RecHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new HymnHolder(layoutInflater,viewGroup);
+            return new RecListFragment.RecHolder(layoutInflater,viewGroup);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull HymnHolder hymnHolder, int i) {
-            Hymn hymn = mHymns.get(i);
-            hymnHolder.bind(hymn);
+        public void onBindViewHolder(@NonNull RecListFragment.RecHolder hymnHolder, int i) {
+
         }
 
         @Override
@@ -76,4 +64,6 @@ public class HymnListFragment extends Fragment {
             return mHymns.size();
         }
     }
+
+
 }

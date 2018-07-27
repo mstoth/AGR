@@ -26,6 +26,7 @@ public class MainActivity extends DoubleFragmentActivity {
                     switchToPerfFragment();
                     return true;
                 case R.id.navigation_notifications:
+                    switchToRecFragment();
                     return true;
             }
             return false;
@@ -56,7 +57,9 @@ public class MainActivity extends DoubleFragmentActivity {
     }
 
     @Override
-    protected  Fragment createButtonFragment() { return new HymnButtonFragment(); }
+    protected  Fragment createButtonFragment() {
+        return new HymnButtonFragment();
+    }
 
     public void switchToHymnFragment() {
         FragmentManager manager = getSupportFragmentManager();
@@ -66,9 +69,14 @@ public class MainActivity extends DoubleFragmentActivity {
 
     public void switchToPerfFragment() {
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.list_container, new HymnListFragment()).commit();
+        manager.beginTransaction().replace(R.id.list_container, new PerfListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container, new PerfButtonFragment()).commit();
     }
 
+    public void switchToRecFragment() {
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
+        manager.beginTransaction().replace(R.id.button_container, new RecButtonFragment()).commit();
+    }
 
 }

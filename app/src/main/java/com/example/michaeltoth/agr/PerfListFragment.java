@@ -29,14 +29,14 @@ public class PerfListFragment extends Fragment {
     private class PerfHolder extends RecyclerView.ViewHolder {
 
         public PerfHolder(LayoutInflater inflater,ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_hymn,parent,false));
+            super(inflater.inflate(R.layout.list_item_perf,parent,false));
         }
 
     }
 
     private void updateUI() {
         HymnBook hymnBook = HymnBook.get(getActivity());
-        List<Hymn> hymns  = hymnBook.getHymns();
+        List<Hymn> hymns  = hymnBook.getmPerfs();
         mAdapter = new PerfListFragment.PerfAdapter(hymns);
         mHymnRecyclerView.setAdapter(mAdapter);
     }
