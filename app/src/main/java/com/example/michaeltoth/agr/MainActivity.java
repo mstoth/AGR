@@ -128,6 +128,21 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         v.setLayoutParams(lp);
     }
 
+    void sendHymnStartup() {
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_song_current\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":1}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_status\",\"value\":1}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_volume_limit\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_verses_to_play\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_lds_is\"}",UIHandler,getApplicationContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_intro_play\"}",UIHandler,getApplicationContext());
+    }
+
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
