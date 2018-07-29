@@ -1,15 +1,20 @@
 package com.example.michaeltoth.agr;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +64,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -100,10 +106,15 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new HymnListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container,new HymnButtonFragment()).commit();
-        View v = findViewById(R.id.list_container);
-        ViewGroup.LayoutParams lp = v.getLayoutParams();
-        lp.height = 500;
-        v.setLayoutParams(lp);
+
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int height=display.getHeight();
+        View view = findViewById(R.id.list_container);
+        ViewGroup.LayoutParams p = view.getLayoutParams();
+        int h = p.height;
+        p.height  = (int)(height/5);
+        view.setLayoutParams(p);
 
     }
 
@@ -111,10 +122,14 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new PerfListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container, new PerfButtonFragment()).commit();
-        View v = findViewById(R.id.list_container);
-        ViewGroup.LayoutParams lp = v.getLayoutParams();
-        lp.height = 500;
-        v.setLayoutParams(lp);
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int height=display.getHeight();
+        View view = findViewById(R.id.list_container);
+        ViewGroup.LayoutParams p = view.getLayoutParams();
+        int h = p.height;
+        p.height  = (int)(height/4);
+        view.setLayoutParams(p);
 
     }
 
@@ -122,10 +137,14 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container, new RecButtonFragment()).commit();
-        View v = findViewById(R.id.list_container);
-        ViewGroup.LayoutParams lp = v.getLayoutParams();
-        lp.height = 500;
-        v.setLayoutParams(lp);
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int height=display.getHeight();
+        View view = findViewById(R.id.list_container);
+        ViewGroup.LayoutParams p = view.getLayoutParams();
+        int h = p.height;
+        p.height  = (int)(height/4);
+        view.setLayoutParams(p);
     }
 
     void sendHymnStartup() {

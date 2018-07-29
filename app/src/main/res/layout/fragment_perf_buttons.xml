@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:gravity="center"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
 
@@ -39,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/perf_vol_text"
+                android:textSize="24dp"
                 android:text="Volume: 0"/>
 
         </LinearLayout>
@@ -46,6 +48,7 @@
         <LinearLayout
             android:gravity="center"
             android:layout_width="match_parent"
+            android:layout_margin="20dp"
             android:layout_height="wrap_content">
 
             <ImageButton

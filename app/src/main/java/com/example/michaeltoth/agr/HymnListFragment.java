@@ -1,17 +1,25 @@
 package com.example.michaeltoth.agr;
 
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.lang.reflect.Method;
 import java.util.List;
+
+import static android.support.v4.content.ContextCompat.getSystemService;
 
 
 public class HymnListFragment extends Fragment {
@@ -25,6 +33,15 @@ public class HymnListFragment extends Fragment {
         mHymnRecyclerView = (RecyclerView) view.findViewById(R.id.hymn_recycler_view);
         mHymnRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         updateUI();
+
+//        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+//        Display display = wm.getDefaultDisplay();
+//        int height=display.getHeight();
+//        ViewGroup.LayoutParams p = view.getLayoutParams();
+//        int h = p.height;
+//        p.height  = (int)(height/5);
+//        view.setLayoutParams(p);
+
         return view;
     }
 
@@ -48,6 +65,7 @@ public class HymnListFragment extends Fragment {
         List<Hymn> hymns  = hymnBook.getHymns();
         mAdapter = new HymnAdapter(hymns);
         mHymnRecyclerView.setAdapter(mAdapter);
+
     }
 
     private class HymnAdapter extends RecyclerView.Adapter<HymnHolder> {
