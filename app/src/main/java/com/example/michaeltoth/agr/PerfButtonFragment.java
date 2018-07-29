@@ -32,6 +32,14 @@ public class PerfButtonFragment extends Fragment {
             }
         });
 
+        mPerfVolUpButton.setOnLongClickListener(new ImageButton.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(getContext(),"Long Click on Up Button",Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
         mPerfVolUpButton.setOnClickListener(new ImageButton.OnClickListener(){
 
             @Override
