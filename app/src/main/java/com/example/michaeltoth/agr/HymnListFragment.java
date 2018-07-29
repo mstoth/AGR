@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -45,18 +46,24 @@ public class HymnListFragment extends Fragment {
         return view;
     }
 
-    private class HymnHolder extends RecyclerView.ViewHolder {
+    private class HymnHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleView;
         private Hymn mHymn;
 
         public HymnHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_hymn,parent,false));
-            mTitleView = itemView.findViewById(R.id.hymn_title);
+            itemView.setOnClickListener(this);
+            mTitleView = (TextView) itemView.findViewById(R.id.hymn_title);
         }
 
         public void bind(Hymn hymn) {
             mHymn = hymn;
             mTitleView.setText(hymn.getTitle());
+        }
+
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(getActivity(),mHymn.getTitle() + " clicked!",Toast.LENGTH_SHORT).show();
         }
     }
 

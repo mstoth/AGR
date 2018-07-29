@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -39,12 +40,13 @@ public class PerfListFragment extends Fragment {
         return view;
     }
 
-    private class PerfHolder extends RecyclerView.ViewHolder {
+    private class PerfHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleView;
         private Hymn mPerf;
 
         public PerfHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_perf,parent,false));
+            itemView.setOnClickListener(this);
             mTitleView = itemView.findViewById(R.id.perf_title);
 
         }
@@ -55,6 +57,10 @@ public class PerfListFragment extends Fragment {
         }
 
 
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(getActivity(),mPerf.getTitle() + " clicked!",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateUI() {

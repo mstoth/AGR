@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PerfButtonFragment extends Fragment {
     private ImageButton mPerfVolUpButton;
     private ImageButton mPerfVolDownButton;
+    private ImageButton mPerfPlayButton;
     private TextView mPerfVolText;
     @Nullable
     @Override
@@ -21,6 +23,30 @@ public class PerfButtonFragment extends Fragment {
         mPerfVolUpButton = view.findViewById(R.id.perf_vol_up);
         mPerfVolDownButton = view.findViewById(R.id.perf_vol_down);
         mPerfVolText = view.findViewById(R.id.perf_vol_text);
+        mPerfPlayButton = (ImageButton) view.findViewById(R.id.perf_play_button);
+        mPerfPlayButton.setOnClickListener(new ImageButton.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(),"Play Button Pressed",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mPerfVolUpButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(),"Up Button",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mPerfVolDownButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(),"Down Button",Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
 
