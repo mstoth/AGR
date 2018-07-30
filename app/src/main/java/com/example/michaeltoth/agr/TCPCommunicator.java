@@ -129,7 +129,7 @@ public class TCPCommunicator {
 
     public static void addListener(TCPListener listener)
     {
-        allListeners.clear();
+        // allListeners.clear();
         allListeners.add(listener);
     }
     public static void removeAllListeners()

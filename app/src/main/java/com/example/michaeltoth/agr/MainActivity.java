@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +30,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     private TCPCommunicator tcpClient;
     private Handler UIHandler = new Handler();
     private TextView mHomeTextView;
-
+    private HymnBook hymnBook;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -64,6 +65,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
+        hymnBook = HymnBook.get(this);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -78,6 +80,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
             tcpClient.addListener(this);
             TCPCommunicator.writeStringToSocket("{\"mtype\":\"GIRQ\"}\n",UIHandler,getApplicationContext());
         }
+
 
     }
 
@@ -106,7 +109,6 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new HymnListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container,new HymnButtonFragment()).commit();
-
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         int height=display.getHeight();
@@ -115,7 +117,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         int h = p.height;
         p.height  = (int)(height/5);
         view.setLayoutParams(p);
-
+        view.invalidate();
     }
 
     public void switchToPerfFragment() {
@@ -147,20 +149,6 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         view.setLayoutParams(p);
     }
 
-    void sendHymnStartup() {
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_song_current\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":1}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_status\",\"value\":1}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_volume_limit\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_verses_to_play\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_lds_is\"}",UIHandler,getApplicationContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_intro_play\"}",UIHandler,getApplicationContext());
-    }
 
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
@@ -191,6 +179,13 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
                         }
                     }
                 });
+            }
+            if (messageTypeString.equals("CPPP")) {
+                final String messageSubTypeString=theMessage.getString("mstype");
+                if (messageSubTypeString.equals("hymnplayer_hymn_list")) {
+                    final JSONArray hymns = theMessage.getJSONArray("value");
+                    hymnBook.setHymns(hymns);
+                }
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block

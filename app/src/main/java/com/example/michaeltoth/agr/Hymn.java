@@ -14,4 +14,8 @@ public class Hymn {
     public Hymn() {
 
     }
+
+    public Hymn(String s) {
+        mTitle = s;
+    }
 }

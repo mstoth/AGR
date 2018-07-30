@@ -2,11 +2,13 @@ package com.example.michaeltoth.agr;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +17,20 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
-public class PerfListFragment extends Fragment {
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+public class PerfListFragment extends Fragment implements TCPListener {
     private RecyclerView mHymnRecyclerView;
     private PerfListFragment.PerfAdapter mAdapter;
+    private TCPCommunicator tcpClient;
+    private Handler UIHandler = new Handler();
+    private HymnBook hymnBook;
 
     @Nullable
     @Override
@@ -27,6 +38,11 @@ public class PerfListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
         mHymnRecyclerView = (RecyclerView) view.findViewById(R.id.hymn_recycler_view);
         mHymnRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        tcpClient = TCPCommunicator.getInstance();
+        tcpClient.addListener(this);
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
+        hymnBook = HymnBook.get(getContext());
+
         updateUI();
 
 //        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -38,6 +54,40 @@ public class PerfListFragment extends Fragment {
 //        view.setLayoutParams(p);
 
         return view;
+    }
+
+    @Override
+    public void onTCPMessageRecieved(JSONObject message) {
+        final JSONObject theMessage=message;
+        try {
+
+            final String messageTypeString=theMessage.getString("mtype");
+
+            Log.d("DEBUG",messageTypeString);
+
+            if (messageTypeString.equals("CPPP")) {
+                final String messageSubTypeString=theMessage.getString("mstype");
+                if (messageSubTypeString.equals("preludeplayer_list")) {
+                    final JSONArray hymns = theMessage.getJSONArray("value");
+                    hymnBook.setPerfs(hymns);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
+
     }
 
     private class PerfHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
