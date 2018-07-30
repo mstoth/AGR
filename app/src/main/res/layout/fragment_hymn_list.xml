@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/paper_background"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <com.example.michaeltoth.agr.widget.WheelView
-    android:layout_width="match_parent"
     android:id="@+id/hymn_recycler_view"
     android:layout_height="165dp"
-    android:padding="20dp"
-    android:layout_gravity="center"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:layout_weight="1"
-    app:layout_constraintTop_toTopOf="parent"/>
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+<!--<android.support.constraint.ConstraintLayout -->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@drawable/paper_background"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto">-->
 
-</android.support.constraint.ConstraintLayout>
+<!--<com.example.michaeltoth.agr.widget.WheelView-->
+    <!---->
+    <!---->
+    <!--android:layout_width="match_parent"-->
+    <!--android:id="@+id/hymn_recycler_view"-->
+    <!--android:layout_height="165dp" />-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
