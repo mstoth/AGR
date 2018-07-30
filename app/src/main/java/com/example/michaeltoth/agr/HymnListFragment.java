@@ -194,7 +194,6 @@ public class HymnListFragment extends Fragment implements TCPListener{
     }
 
     private class HymnAdapter4 extends AbstractWheelTextAdapter {
-        // Countries names
         private HymnBook hymnBook = HymnBook.get(getContext());
         private String[] hymns = hymnBook.getHymnArray();
 
@@ -202,7 +201,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
          * Constructor
          */
         protected HymnAdapter4(Context context, HymnBook hymnbook) {
-            super(context, R.layout.fragment_hymn_list, NO_RESOURCE);
+            super(context, R.layout.list_item_hymn, NO_RESOURCE);
             setItemTextResource(R.id.hymn_title);
         }
 
