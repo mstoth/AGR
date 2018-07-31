@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
@@ -22,16 +23,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class HymnButtonFragment extends Fragment implements TCPListener {
-    private ImageButton mHymnVolUpButton;
-    private ImageButton mHymnVolDownButton;
-    private TextView mHymnVolText;
+    private ImageButton mHymnVolUpButton, mHymnVolDownButton;
+    private ImageButton mHymnTempoUpButton, mHymnTempoDownButton;
+    private ImageButton mHymnVersesUpButton, mHymnVersesDownButton;
+    private ImageButton mHymnPitchUpButton, mHymnPitchDownButton;
+
+    private Button englishButton, frenchButton, portugueseButton, spanishButton;
+
+    private TextView mHymnVolText,mTempoText,mVersesText,mPlayButtonTextView,mPitchTextView;
     private ImageButton mPlayButton;
     private TCPCommunicator tcpClient;
     private Handler UIHandler = new Handler();
     private boolean remoteActive;
-    int currentSong;
-    int currentVolume;
-    int currentPitch;
+    int currentSong, currentVolume, currentPitch, currentTempo, currentVerses;
     boolean playing;
     boolean paused;
     int volMax;
@@ -50,13 +54,233 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_hymn_buttons,container,false);
-        mHymnVolUpButton = myView.findViewById(R.id.hymn_vol_up);
-        mHymnVolDownButton = myView.findViewById(R.id.hymn_vol_down);
         mHymnVolText = myView.findViewById(R.id.hymn_vol_text);
+        mTempoText = myView.findViewById(R.id.hymn_tempo_text);
+        mVersesText = myView.findViewById(R.id.hymn_verses_text);
+        mPitchTextView = myView.findViewById(R.id.hymn_pitch_text);
         tcpClient = TCPCommunicator.getInstance();
         remoteActive = false;
+        mPlayButtonTextView = myView.findViewById(R.id.play_button_text_view);
+        englishButton = (Button) myView.findViewById(R.id.english_radio);
+        frenchButton = (Button) myView.findViewById(R.id.french_radio);
+        portugueseButton = (Button) myView.findViewById(R.id.portuguese_radio);
+        spanishButton = (Button) myView.findViewById(R.id.spanish_radio);
+
+        // BUTTONS
+
+        // VOLUME BUTTON
+        // UP
+        mHymnVolUpButton = myView.findViewById(R.id.hymn_vol_up);
+        mHymnVolUpButton.setOnClickListener(new ImageButton.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                currentVolume = currentVolume + 1;
+                if (currentVolume > volMax) {
+                    currentVolume = volMax;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_volume_limit\",\"value\":" + Integer.toString(currentVolume) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHymnVolText.setText("Volume: " + currentVolume);
+                    }
+                });
+            }
+        });
+
+        // DOWN
+        mHymnVolDownButton = myView.findViewById(R.id.hymn_vol_down);
+        mHymnVolDownButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentVolume = currentVolume - 1;
+                if (currentVolume < volMin) {
+                    currentVolume = volMin;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_volume_limit\",\"value\":" + Integer.toString(currentVolume) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mHymnVolText.setText("Volume: " + currentVolume);
+                    }
+                });
+            }
+        });
+
+        // TEMPO BUTTON
+        // UP
+        mHymnTempoUpButton = myView.findViewById(R.id.hymn_tempo_up);
+        mHymnTempoUpButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentTempo = currentTempo + 1;
+                if (currentTempo > tempoMax) {
+                    currentTempo = tempoMax;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\",\"value\":" + Integer.toString(currentTempo) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTempoText.setText("Tempo: " + currentTempo);
+                    }
+                });
+            }
+        });
+        //DOWN
+        mHymnTempoDownButton = myView.findViewById(R.id.hymn_tempo_down);
+        mHymnTempoDownButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentTempo = currentTempo - 1;
+                if (currentTempo < tempoMin) {
+                    currentTempo = tempoMin;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\",\"value\":" + Integer.toString(currentTempo) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTempoText.setText("Tempo: " + currentTempo);
+                    }
+                });
+            }
+        });
+
+        // VERSES BUTTON
+        // UP
+        mHymnVersesUpButton = myView.findViewById(R.id.hymn_verses_up);
+        mHymnVersesUpButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentVerses = currentVerses + 1;
+                if (currentVerses > versesMax) {
+                    currentVerses = versesMax;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_verses_to_play\",\"value\":" + Integer.toString(currentVerses) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mVersesText.setText("Verses: " + currentVerses);
+                    }
+                });
+            }
+        });
+        // DOWN
+        mHymnVersesDownButton = myView.findViewById(R.id.hymn_verses_down);
+        mHymnVersesDownButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentVerses = currentVerses - 1;
+                if (currentVerses < versesMin) {
+                    currentVerses = versesMin;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_verses_to_play\",\"value\":" + Integer.toString(currentVerses) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mVersesText.setText("Verses: " + currentVerses);
+                    }
+                });
+            }
+        });
+
+        // PITCH BUTTON
+        // UP
+        mHymnPitchUpButton = myView.findViewById(R.id.hymn_pitch_up);
+        mHymnPitchUpButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentPitch = currentPitch + 1;
+                if (currentPitch > pitchMax) {
+                    currentPitch = pitchMax;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPitchTextView.setText("Pitch: " + currentPitch);
+                    }
+                });
+            }
+        });
+        // DOWN
+        mHymnPitchDownButton = myView.findViewById(R.id.hymn_pitch_down);
+        mHymnPitchDownButton.setOnClickListener(new ImageButton.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                currentPitch = currentPitch - 1;
+                if (currentPitch > pitchMax) {
+                    currentPitch = pitchMax;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPitchTextView.setText("Pitch: " + currentPitch);
+                    }
+                });
+            }
+        });
+
+        Switch introSwitch = (Switch) myView.findViewById(R.id.include_intro_switch);
+        introSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_intro_play\",\"value\":true}",UIHandler,getContext());
+                } else {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_intro_play\",\"value\":false}",UIHandler,getContext());
+                }
+            }
+        });
+
+        // LANGUAGE BUTTONS
+        englishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"value\":0}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"write\":true}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+            }
+        });
+
+        frenchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"value\":1}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"write\":true}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+            }
+        });
+
+        portugueseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"value\":2}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"write\":true}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+            }
+        });
+
+        spanishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"value\":3}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_language_current\",\"write\":true}",UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+            }
+        });
+
+        RadioGroup radioGroup = myView.findViewById(R.id.language_group);
+        radioGroup.check(R.id.english_radio);
 
 
+        // PLAY BUTTON
         mPlayButton = myView.findViewById(R.id.hymn_play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -255,6 +479,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     // hs.setText(R.string.play_status);
                                     playing = false;
                                     paused = false;
+                                    mPlayButtonTextView.setText("Play");
                                     break;
                                 }
                                 case 1: {
@@ -263,6 +488,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     // hs.setText(R.string.stop_status);
                                     playing = true;
                                     paused = false;
+                                    mPlayButtonTextView.setText("Stop");
                                     break;
                                 }
                                 case 2: {
@@ -277,6 +503,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     // hs.setText(R.string.continue_status);
                                     playing = false;
                                     paused = true;
+                                    mPlayButtonTextView.setText("Continue");
                                     break;
                                 }
                                 case 4: {
@@ -304,32 +531,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                         }
                     });
                 }
-//                if (messageSubTypeString.equals("hymnplayer_hymn_list")) {
-//                    final ArrayList<String> listdata = new ArrayList<String>();
-//                    listdata.clear();
-//                    final JSONArray hymns = obj.getJSONArray("value");
-//                    if (hymns != null) {
-//                        for (int i=0;i<hymns.length();i++){
-//                            listdata.add(hymns.getString(i));
-//                        }
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            public void run() {
-//                                hymnBook.setHymns(listdata);
-//                                final WheelView hymnsWheelView = (WheelView) findViewById(R.id.hymn_recycler_view);
-//                                updateHymns(hymnsWheelView,hymnBook,0);
-////                                HymnAdapter4 hymnAdapter;
-////                                hymnAdapter = new HymnAdapter4(HymnPlayerActivity.this,hymnBook);
-////                                // final WheelView hymnsWheelView = (WheelView) findViewById(R.id.hymn_recycler_view);
-////                                hymnsWheelView.setViewAdapter(hymnAdapter);
-//
-////                                hymnsWheelView.refreshDrawableState();
-////                                hymnsWheelView.notifyAll();
-//// mHymnRecyclerView.setAdapter(mAdapter);
-//                                // mAdapter.notifyDataSetChanged();
-//                            }
-//                        });
-//                    }
-//                }
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block

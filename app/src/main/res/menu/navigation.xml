@@ -8,17 +8,17 @@
 
     <item
         android:id="@+id/navigation_hymn"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/hymn"
         android:title="@string/title_hymn" />
 
     <item
         android:id="@+id/navigation_performance"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/treble"
         android:title="@string/title_perf" />
 
     <item
         android:id="@+id/navigation_recording"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/microphone"
         android:title="@string/title_rec" />
 
 </menu>

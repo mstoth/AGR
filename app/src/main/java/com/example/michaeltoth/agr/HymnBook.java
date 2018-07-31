@@ -92,5 +92,14 @@ public class HymnBook {
         return hArray;
     }
 
+    public String[] getPerfArray() {
+        String[] hArray = new String[mPerfs.size()];
+        int i;
+        for (i=0;i<mPerfs.size();i++) {
+            hArray[i]=perfArrayList.get(i);
+        }
+        return hArray;
+    }
+
 
 }

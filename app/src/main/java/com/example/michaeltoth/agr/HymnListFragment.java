@@ -52,9 +52,6 @@ public class HymnListFragment extends Fragment implements TCPListener{
 
         scrolling = false;
 
-//        mHymnRecyclerView = (RecyclerView) view.findViewById(R.id.hymn_recycler_view);
-//        mHymnRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
         hymnsWheelView.setVisibleItems(1);
         mAdapter = new HymnAdapter4(getContext(),hymnBook);

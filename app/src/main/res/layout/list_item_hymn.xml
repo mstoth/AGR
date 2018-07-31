@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<android.support.constraint.ConstraintLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/hymn_title"-->
-        <!--android:text="Hymn Title"-->
-        <!--android:textSize="24dp"-->
-        <!--android:layout_margin="5dp"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-
-<!--</android.support.constraint.ConstraintLayout>-->
 
 <RelativeLayout android:orientation="horizontal"
     android:layout_height="wrap_content"

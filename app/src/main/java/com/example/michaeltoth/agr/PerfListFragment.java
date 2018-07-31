@@ -17,6 +17,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.michaeltoth.agr.widget.OnWheelChangedListener;
+import com.example.michaeltoth.agr.widget.OnWheelScrollListener;
+import com.example.michaeltoth.agr.widget.WheelView;
+import com.example.michaeltoth.agr.widget.adapters.AbstractWheelTextAdapter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,31 +32,53 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class PerfListFragment extends Fragment implements TCPListener {
     private RecyclerView mHymnRecyclerView;
-    private PerfListFragment.PerfAdapter mAdapter;
+    private PerfListFragment.HymnAdapter4 mAdapter;
     private TCPCommunicator tcpClient;
     private Handler UIHandler = new Handler();
     private HymnBook hymnBook;
+    private boolean scrolling;
+    WheelView hymnsWheelView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
-        mHymnRecyclerView = (RecyclerView) view.findViewById(R.id.hymn_recycler_view);
-        mHymnRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        View view = inflater.inflate(R.layout.fragment_perf_list,container,false);
+
+        scrolling = false;
+
+        hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
+        hymnsWheelView.setVisibleItems(1);
+        mAdapter = new PerfListFragment.HymnAdapter4(getContext(),hymnBook);
+        hymnsWheelView.setViewAdapter(mAdapter);
+
+        hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
+            public void onChanged(WheelView wheel, int oldValue, int newValue) {
+                if (!scrolling) {
+                    Log.d("TAG","oldValue is " + Integer.toString(oldValue));
+                    Log.d("TAG","new value is " + Integer.toString(newValue));
+                }
+            }
+        });
+
+        hymnsWheelView.addScrollingListener( new OnWheelScrollListener() {
+            public void onScrollingStarted(WheelView wheel) {
+                scrolling = true;
+            }
+            public void onScrollingFinished(WheelView wheel) {
+                scrolling = false;
+                Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_song_current\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()) + "}",
+                        UIHandler,getContext());
+
+            }
+        });
+
         tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
         hymnBook = HymnBook.get(getContext());
 
         updateUI();
-
-//        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/3);
-//        view.setLayoutParams(p);
 
         return view;
     }
@@ -116,8 +143,8 @@ public class PerfListFragment extends Fragment implements TCPListener {
     private void updateUI() {
         HymnBook hymnBook = HymnBook.get(getActivity());
         List<Hymn> hymns  = hymnBook.getmPerfs();
-        mAdapter = new PerfListFragment.PerfAdapter(hymns);
-        mHymnRecyclerView.setAdapter(mAdapter);
+        mAdapter = new HymnAdapter4(getContext(),hymnBook);
+        hymnsWheelView.setViewAdapter(mAdapter);
     }
 
     private class PerfAdapter extends RecyclerView.Adapter<PerfListFragment.PerfHolder> {
@@ -143,6 +170,35 @@ public class PerfListFragment extends Fragment implements TCPListener {
         @Override
         public int getItemCount() {
             return mHymns.size();
+        }
+    }
+
+    private class HymnAdapter4 extends AbstractWheelTextAdapter {
+        private HymnBook hymnBook = HymnBook.get(getContext());
+        private String[] hymns = hymnBook.getPerfArray();
+
+        /**
+         * Constructor
+         */
+        protected HymnAdapter4(Context context, HymnBook hymnbook) {
+            super(context, R.layout.list_item_perf, NO_RESOURCE);
+            setItemTextResource(R.id.perf_title);
+        }
+
+        @Override
+        public View getItem(int index, View cachedView, ViewGroup parent) {
+            View view = super.getItem(index, cachedView, parent);
+            return view;
+        }
+
+        @Override
+        public int getItemsCount() {
+            return hymns.length;
+        }
+
+        @Override
+        protected CharSequence getItemText(int index) {
+            return hymns[index];
         }
     }
 

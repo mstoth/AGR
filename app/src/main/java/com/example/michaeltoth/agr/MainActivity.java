@@ -95,6 +95,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     }
 
     public void switchToHomeFragment() {
+        tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new HomeListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container,new HomeButtonFragment()).commit();
@@ -106,6 +107,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     }
 
     public void switchToHymnFragment() {
+        tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new HymnListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container,new HymnButtonFragment()).commit();
@@ -121,6 +123,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     }
 
     public void switchToPerfFragment() {
+        tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new PerfListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container, new PerfButtonFragment()).commit();
@@ -136,6 +139,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     }
 
     public void switchToRecFragment() {
+        tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
         manager.beginTransaction().replace(R.id.button_container, new RecButtonFragment()).commit();

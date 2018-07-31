@@ -5,19 +5,3 @@
     android:layout_height="165dp"
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android" />
-<!--<android.support.constraint.ConstraintLayout -->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:background="@drawable/paper_background"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto">-->
-
-<!--<com.example.michaeltoth.agr.widget.WheelView-->
-    <!---->
-    <!---->
-    <!--android:layout_width="match_parent"-->
-    <!--android:id="@+id/hymn_recycler_view"-->
-    <!--android:layout_height="165dp" />-->
-
-<!--</android.support.constraint.ConstraintLayout>-->

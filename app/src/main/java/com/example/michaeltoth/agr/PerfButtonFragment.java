@@ -1,6 +1,7 @@
 package com.example.michaeltoth.agr;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,10 @@ public class PerfButtonFragment extends Fragment {
     private ImageButton mPerfVolDownButton;
     private ImageButton mPerfPlayButton;
     private TextView mPerfVolText;
+    private int currentVolume, volMax, volMin;
+    private TCPCommunicator tcpClient;
+    private Handler UIHandler = new Handler();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,7 +49,13 @@ public class PerfButtonFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(),"Up Button",Toast.LENGTH_SHORT).show();
+                currentVolume = currentVolume + 1;
+                if (currentVolume > volMax) {
+                    currentVolume = volMax;
+                }
+                String msg = "{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_volume_limit\",\"value\":" + currentVolume + "}";
+                tcpClient.writeStringToSocket(msg,UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_volume_limit\"}",UIHandler,getContext());
             }
         });
 
