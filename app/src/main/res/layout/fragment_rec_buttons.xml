@@ -22,11 +22,13 @@
             android:padding="10dp">
 
             <Button
+                android:id="@+id/rec_record_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Record" />
 
             <Button
+                android:id="@+id/rec_play_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Play" />
@@ -40,11 +42,13 @@
             android:padding="10dp">
 
             <Button
+                android:id="@+id/rec_stop_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stop" />
 
             <Button
+                android:id="@+id/rec_delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delete" />

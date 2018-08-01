@@ -1,21 +1,214 @@
 package com.example.michaeltoth.agr;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class RecButtonFragment extends Fragment {
+import com.example.michaeltoth.agr.widget.WheelView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class RecButtonFragment extends Fragment implements TCPListener {
+    private boolean remoteActive;
+    private View myView;
+    private Button playButton;
+    private Handler UIHandler = new Handler();
+    private HymnBook hymnBook;
+    private boolean scrolling = false;
+    private TCPCommunicator tcpClient = TCPCommunicator.getInstance();
+    private Button recordButton, stopButton, deleteButton;
+    private TextView counterTextView, statusTextView;
+    private int currentSelection;
+    private ArrayList<String> mediaDirList;
+    private ArrayList<String> midiFiles;
+    private ArrayList<String> titles;
+    WheelView hymnsWheelView;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rec_buttons,container,false);
+        remoteActive = false;
+        myView = view;
         return view;
     }
 
+    @Override
+    public void onTCPMessageRecieved(JSONObject message) {
+        final JSONObject theMessage=message;
+        try {
+            JSONObject obj = theMessage;
+            final String messageTypeString=obj.getString("mtype");
+            if (messageTypeString.equals("CPPP")) {
+                final String messageSubTypeString = obj.getString("mstype");
+                if (messageSubTypeString.equals("seqeng_remote_active")) {
+                    remoteActive = obj.getBoolean("value");
+                    if (!remoteActive) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(),"Remote is not active.",Toast.LENGTH_SHORT).show();
+                                playButton = (Button) myView.findViewById(R.id.rec_play_button);
+                                //playButton.setEnabled(false);
+                            }
+                        });
+                    }
+                }
+
+//                if (messageSubTypeString.equals("media_dir_list")) {
+//                    int i;
+//                    mediaDirList.clear();
+//                    final ArrayList<String> mMidiFiles;
+//                    mMidiFiles = new ArrayList<String>();
+//                    mMidiFiles.clear();
+//                    midiFiles.clear();
+//                    for (i=0;i<obj.getJSONArray("value").length();i++) {
+//                        String s = obj.getJSONArray("value").getString(i);
+//                        mediaDirList.add(s);
+//                        if (s.contains(".MID")) {
+//                            mMidiFiles.add(s);
+//                            midiFiles.add(s);
+//                        }
+//                    }
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            WheelView wv = hymnsWheelView;
+//                            HymnAdapter4 adapter = new HymnAdapter4(RecorderActivity.this,hymnBook);
+//                            hymnsWheelView.setViewAdapter(adapter);
+//                            String[] r = hymnBook.getRecordingArray();
+//                            updateHymns(hymnsWheelView,hymnBook,0);
+//                            wv.invalidate();
+//                        }
+//                    });
+//                }
+                if (messageSubTypeString.equals("sequencer_song_number")) {
+                    currentSelection = obj.getInt("value");
+                }
+                if (messageSubTypeString.equals("sequencer_measure")) {
+                    final String msg = "Counter: " + obj.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            counterTextView.setText(msg);
+                        }
+                    });
+                }
+                if (messageSubTypeString.equals("seqeng_status")) {
+                    final int status = obj.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (status) {
+                                case 0: {
+                                    // STOPPED
+                                    statusTextView.setText("Stopped");
+                                    playButton.setText("Play");
+                                    playButton.setEnabled(true);
+                                    recordButton.setEnabled(true);
+                                    deleteButton.setEnabled(true);
+                                    stopButton.setEnabled(false);
+                                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+
+                                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                                    break;
+                                }
+                                case 1: {
+                                    statusTextView.setText("Playing");
+                                    playButton.setEnabled(true);
+                                    playButton.setText("Pause");
+                                    recordButton.setEnabled(false);
+                                    deleteButton.setEnabled(false);
+                                    stopButton.setEnabled(true);
+
+                                    break;
+                                }
+                                case 2: {
+                                    statusTextView.setText("Seek Done");
+                                    break;
+                                }
+                                case 3: {
+                                    statusTextView.setText("Paused");                                    playButton.setEnabled(false);
+                                    recordButton.setEnabled(false);
+                                    deleteButton.setEnabled(false);
+                                    stopButton.setEnabled(true);
+                                    playButton.setEnabled(true);
+
+                                    break;
+                                }
+                                case 4: {
+                                    statusTextView.setText("Transition");
+                                    break;
+                                }
+                                default: {
+                                    statusTextView.setText("Unknown");
+                                    break;
+                                }
+                            }
+                        }
+                    });
+
+                }
+            }
+            if (messageTypeString.equals("SSTA")) {
+                final String msg = obj.getString("mstype");
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                    }
+                });
+            }
+            if (messageTypeString.equals("GERR")) {
+                int errorNumber = obj.getInt("error_number");
+                if (errorNumber==0) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(),"ERROR: NO FILE",Toast.LENGTH_SHORT).show();
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                        }
+                    });
+
+                }
+                if (errorNumber==1) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(),"ERROR: FILE EXISTS",Toast.LENGTH_SHORT).show();
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                        }
+                    });
+
+                }
+
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
+
+    }
 }
