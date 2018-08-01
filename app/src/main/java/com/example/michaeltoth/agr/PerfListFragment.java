@@ -76,6 +76,7 @@ public class PerfListFragment extends Fragment implements TCPListener {
         tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_song_current\"}",UIHandler,getContext());
         hymnBook = HymnBook.get(getContext());
 
         updateUI();

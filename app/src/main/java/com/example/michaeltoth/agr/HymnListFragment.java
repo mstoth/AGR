@@ -36,7 +36,6 @@ import static android.support.v4.content.ContextCompat.getSystemService;
 
 
 public class HymnListFragment extends Fragment implements TCPListener{
-    private RecyclerView mHymnRecyclerView;
     private HymnAdapter4 mAdapter;
     private TCPCommunicator tcpClient;
     private Handler UIHandler = new Handler();
