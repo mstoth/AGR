@@ -1,6 +1,7 @@
 package com.example.michaeltoth.agr;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -25,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecListFragment extends Fragment implements TCPListener{
@@ -34,13 +36,16 @@ public class RecListFragment extends Fragment implements TCPListener{
     private HymnBook hymnBook;
     private boolean scrolling;
     WheelView hymnsWheelView;
+    private ArrayList<String> midiFiles;
+    private ArrayList<String> mediaDirList;
+    private boolean remoteActive;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
         scrolling = false;
-
+        remoteActive = false;
         hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
         hymnsWheelView.setVisibleItems(1);
         mAdapter = new RecListFragment.HymnAdapter4(getContext(),hymnBook);
@@ -63,16 +68,26 @@ public class RecListFragment extends Fragment implements TCPListener{
             public void onScrollingFinished(WheelView wheel) {
                 scrolling = false;
                 Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
-                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()) + "}",
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()+1) + "}",
                         UIHandler,getContext());
 
             }
         });
 
+        mediaDirList = new ArrayList<String>();
+        midiFiles = new ArrayList<String>();
+        hymnBook = HymnBook.get(getContext());
+        remoteActive = false;
 
 
         tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
+
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+
         hymnBook = HymnBook.get(getContext());
         updateUI();
 
@@ -145,6 +160,34 @@ public class RecListFragment extends Fragment implements TCPListener{
                 if (messageSubTypeString.equals("sequencer_song_number")) {
                     // update wheel view
                 }
+                if (messageSubTypeString.equals("media_dir_list")) {
+                    int i;
+                    mediaDirList.clear();
+                    final ArrayList<String> mMidiFiles;
+                    mMidiFiles = new ArrayList<String>();
+                    mMidiFiles.clear();
+                    midiFiles.clear();
+                    for (i=0;i<theMessage.getJSONArray("value").length();i++) {
+                        String s = theMessage.getJSONArray("value").getString(i);
+                        mediaDirList.add(s);
+                        if (s.contains(".MID")) {
+                            mMidiFiles.add(s);
+                            midiFiles.add(s);
+                        }
+                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WheelView wv = hymnsWheelView;
+                            HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
+                            hymnsWheelView.setViewAdapter(adapter);
+                            String[] r = hymnBook.getRecordingArray();
+                            updateHymns(hymnsWheelView,hymnBook,0);
+                            wv.invalidate();
+                        }
+                    });
+                }
+
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -153,14 +196,48 @@ public class RecListFragment extends Fragment implements TCPListener{
 
     }
 
+    private void updateHymns(WheelView hymnWheelView, HymnBook hbook, int index) {
+        final HymnBook hb = hbook;
+        final int idx = index;
+        final WheelView wv = hymnWheelView;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
+                adapter.setTextSize(18);
+                wv.setViewAdapter(adapter);
+            }
+        });
+    }
+
+
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
 
     }
 
+    private boolean hasMidiFile(int index) {
+        String title = String.format("SONG%02d.MID",index+1);
+        if (midiFiles==null) {
+            return false;
+        }
+        for (String name: midiFiles) {
+            if (name.equals(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private class HymnAdapter4 extends AbstractWheelTextAdapter {
         private HymnBook hymnBook = HymnBook.get(getContext());
         private String[] hymns = hymnBook.getRecArray();
+        private String midiFiles[] = new String[] {};
+
+        public void setMidiFiles(String[] mf) {
+            midiFiles = mf;
+        }
 
         /**
          * Constructor
@@ -173,6 +250,13 @@ public class RecListFragment extends Fragment implements TCPListener{
         @Override
         public View getItem(int index, View cachedView, ViewGroup parent) {
             View view = super.getItem(index, cachedView, parent);
+            TextView txt = (TextView) view.findViewById(R.id.hymn_title);
+            txt.setText(String.format("Selection %02d",index+1));
+            if (hasMidiFile(index)) {
+                txt.setTextColor(Color.BLACK);
+            } else {
+                txt.setTextColor(Color.RED);
+            }
             return view;
         }
 

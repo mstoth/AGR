@@ -14,6 +14,7 @@ public class HymnBook {
     private List<Hymn> mHymns;
     private List<Hymn> mPerfs;
     private List<Hymn> mRecs;
+    private ArrayList<String> mRecordings;
 
     private ArrayList<String> hymnArrayList;
     private ArrayList<String> perfArrayList;
@@ -31,6 +32,7 @@ public class HymnBook {
         mPerfs = new ArrayList<>();
         mRecs = new ArrayList<>();
         recArrayList = new ArrayList<String>();
+        mRecordings = new ArrayList<>();
 
         for (int i=0; i<100; i++ ) {
 //            Hymn hymn = new Hymn();
@@ -40,9 +42,10 @@ public class HymnBook {
 //            perf.setTitle("Performance #" + i);
 //            mPerfs.add(perf);
             Hymn rec = new Hymn();
-            rec.setTitle("Selection " + i);
+            rec.setTitle("Selection " + (i+1));
             mRecs.add(rec);
-            recArrayList.add("Selection " + i);
+            recArrayList.add("Selection " + (i+1));
+            mRecordings.add("Selection " + String.format("%02d",i+1));
         }
     }
 
@@ -109,6 +112,15 @@ public class HymnBook {
         int i;
         for (i=0;i<mRecs.size();i++) {
             hArray[i]=recArrayList.get(i);
+        }
+        return hArray;
+    }
+
+    public String[] getRecordingArray() {
+        String[] hArray = new String[mRecordings.size()];
+        int i;
+        for (i=0;i<mRecordings.size();i++) {
+            hArray[i]=mRecordings.get(i);
         }
         return hArray;
     }

@@ -43,6 +43,83 @@ public class RecButtonFragment extends Fragment implements TCPListener {
         View view = inflater.inflate(R.layout.fragment_rec_buttons,container,false);
         remoteActive = false;
         myView = view;
+
+        recordButton = (Button) myView.findViewById(R.id.rec_record_button);
+        playButton = (Button) myView.findViewById(R.id.rec_play_button);
+        stopButton = (Button) myView.findViewById(R.id.rec_stop_button);
+        deleteButton = (Button) myView.findViewById(R.id.rec_delete_button);
+
+        statusTextView = (TextView) myView.findViewById(R.id.status_text_view);
+        counterTextView = (TextView) myView.findViewById(R.id.counter_text_view);
+        // ON CLICK METHODS
+        recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (remoteActive) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+
+                } else {
+                    Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (remoteActive) {
+                    if (playButton.getText().equals("Pause")) {
+                        playButton.setText("Continue");
+                        playButton.setEnabled(true);
+                        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"pause\"}", UIHandler,getContext());
+                    } else {
+                        if (playButton.getText().equals("Continue")) {
+                            playButton.setText("Pause");
+                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"unpause\"}", UIHandler,getContext());
+                        } else {
+                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
+                            playButton.setText("Pause");
+                        }
+                    }
+                } else {
+                    Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (remoteActive) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                } else {
+                    Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (remoteActive) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"delete\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                } else {
+                    Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        tcpClient.addListener(this);
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
+
         return view;
     }
 
