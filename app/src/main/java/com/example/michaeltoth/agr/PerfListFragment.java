@@ -38,6 +38,9 @@ public class PerfListFragment extends Fragment implements TCPListener {
     private HymnBook hymnBook;
     private boolean scrolling;
     WheelView hymnsWheelView;
+    int currentSong;
+    private View myView;
+    private boolean remoteActive;
 
     @Nullable
     @Override
@@ -45,7 +48,8 @@ public class PerfListFragment extends Fragment implements TCPListener {
         View view = inflater.inflate(R.layout.fragment_perf_list,container,false);
 
         scrolling = false;
-
+        remoteActive = false;
+        hymnBook = HymnBook.get(getContext());
         hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
         hymnsWheelView.setVisibleItems(1);
         mAdapter = new PerfListFragment.HymnAdapter4(getContext(),hymnBook);
@@ -75,12 +79,12 @@ public class PerfListFragment extends Fragment implements TCPListener {
 
         tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_song_current\"}",UIHandler,getContext());
-        hymnBook = HymnBook.get(getContext());
 
         updateUI();
-
+        myView = view;
         return view;
     }
 
@@ -102,6 +106,16 @@ public class PerfListFragment extends Fragment implements TCPListener {
                         @Override
                         public void run() {
                             updateUI();
+                            myView.invalidate();
+                        }
+                    });
+                }
+                if (messageSubTypeString.equals("preludeplayer_song_current")) {
+                    currentSong = theMessage.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            hymnsWheelView.setCurrentItem(currentSong);
                         }
                     });
                 }
@@ -146,6 +160,8 @@ public class PerfListFragment extends Fragment implements TCPListener {
         List<Hymn> hymns  = hymnBook.getmPerfs();
         mAdapter = new HymnAdapter4(getContext(),hymnBook);
         hymnsWheelView.setViewAdapter(mAdapter);
+        hymnsWheelView.invalidateWheel(false);
+
     }
 
     private class PerfAdapter extends RecyclerView.Adapter<PerfListFragment.PerfHolder> {
@@ -170,6 +186,7 @@ public class PerfListFragment extends Fragment implements TCPListener {
 
         @Override
         public int getItemCount() {
+            int sz = mHymns.size();
             return mHymns.size();
         }
     }

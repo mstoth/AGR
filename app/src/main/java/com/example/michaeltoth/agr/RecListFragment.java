@@ -44,6 +44,7 @@ public class RecListFragment extends Fragment implements TCPListener{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
+
         scrolling = false;
         remoteActive = false;
         hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
@@ -262,6 +263,7 @@ public class RecListFragment extends Fragment implements TCPListener{
 
         @Override
         public int getItemsCount() {
+            int sz = hymns.length;
             return hymns.length;
         }
 

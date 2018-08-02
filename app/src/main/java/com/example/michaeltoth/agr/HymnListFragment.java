@@ -42,6 +42,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
     private HymnBook hymnBook;
     private boolean scrolling;
     WheelView hymnsWheelView;
+    private int currentSong;
 
     @Nullable
     @Override
@@ -84,6 +85,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
         tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_song_current\"}",UIHandler,getContext());
         hymnBook = HymnBook.get(getContext());
 
         updateUI();
@@ -116,6 +118,18 @@ public class HymnListFragment extends Fragment implements TCPListener{
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            updateUI();
+                        }
+                    });
+                }
+                if (messageSubTypeString.equals("hymnplayer_song_current")) {
+                    currentSong = theMessage.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            hymnsWheelView.setCurrentItem(currentSong);
                             updateUI();
                         }
                     });
@@ -159,6 +173,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
         List<Hymn> hymns  = hymnBook.getHymns();
         mAdapter = new HymnAdapter4(getContext(),hymnBook);
         hymnsWheelView.setViewAdapter(mAdapter);
+        hymnsWheelView.invalidateWheel(false);
 
     }
 
@@ -209,6 +224,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
 
         @Override
         public int getItemsCount() {
+            int s = hymns.length;
             return hymns.length;
         }
 
