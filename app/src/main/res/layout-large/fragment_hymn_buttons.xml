@@ -26,21 +26,23 @@
                 android:id="@+id/hymn_vol_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:src="@drawable/upt"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_vol_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:src="@drawable/downt"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_vol_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Volume: 0" />
+                android:layout_gravity="center_vertical"
+                android:text="Volume: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -55,21 +57,23 @@
                 android:id="@+id/hymn_tempo_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:src="@drawable/upt"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_tempo_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:src="@drawable/downt"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_tempo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tempo: 0" />
+                android:layout_gravity="center_vertical"
+                android:text="Tempo: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -84,21 +88,23 @@
                 android:id="@+id/hymn_verses_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:src="@drawable/upt"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_verses_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:src="@drawable/downt"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_verses_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Verses: 0" />
+                android:layout_gravity="center_vertical"
+                android:text="Verses: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -113,21 +119,23 @@
                 android:id="@+id/hymn_pitch_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:src="@drawable/upt"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_pitch_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:src="@drawable/downt"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_pitch_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pitch: 0" />
+                android:layout_gravity="center_vertical"
+                android:text="Pitch: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -140,7 +148,9 @@
                 android:id="@+id/include_intro_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Include Introduction" />
+                android:layout_margin="5sp"
+                android:text="Include Introduction"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -173,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="English"
-                android:textSize="10sp" />
+                android:textSize="18sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -183,7 +193,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Spanish"
-                android:textSize="10sp" />
+                android:textSize="18sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -199,7 +209,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Portuguese"
-                android:textSize="10sp" />
+                android:textSize="18sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -208,7 +218,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="French"
-                android:textSize="10sp" />
+                android:textSize="18sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -229,13 +239,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_play_arrow_black_24dp" />
+                android:src="@drawable/playt" />
 
             <TextView
                 android:id="@+id/play_button_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Play" />
+                android:text="Play"
+                android:textSize="24sp" />
         </LinearLayout>
 
     </LinearLayout>

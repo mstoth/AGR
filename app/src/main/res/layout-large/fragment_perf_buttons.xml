@@ -27,14 +27,14 @@
                 android:id="@+id/perf_vol_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:src="@drawable/upt"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/perf_vol_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:src="@drawable/downt"
                 android:text="Down" />
             <TextView
                 android:layout_width="wrap_content"
@@ -56,13 +56,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_play_arrow_black_24dp" />
+                android:src="@drawable/playt" />
             <TextView
                 android:id="@+id/perf_play_text"
                 android:textSize="24dp"
                 android:text="Play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </LinearLayout>

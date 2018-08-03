@@ -27,6 +27,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
     private Handler UIHandler = new Handler();
     private boolean playing, remoteActive;
     private int currentSong;
+    private TextView mPerfPlayText;
 
     @Nullable
     @Override
@@ -35,6 +36,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
         mPerfVolUpButton = view.findViewById(R.id.perf_vol_up);
         mPerfVolDownButton = view.findViewById(R.id.perf_vol_down);
         mPerfVolText = view.findViewById(R.id.perf_vol_text);
+        mPerfPlayText = view.findViewById(R.id.perf_play_text);
 
         // PLAY BUTTON
         mPerfPlayButton = (ImageButton) view.findViewById(R.id.perf_play_button);
@@ -45,10 +47,13 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
                 if (remoteActive) {
                     if (playing) {
                         playing = false;
+                        mPerfPlayText.setText("Play");
+                        mPerfPlayButton.getBackground()
                         mPerfPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                     } else {
                         playing = true;
+                        mPerfPlayText.setText("Stop");
                         mPerfPlayButton.setBackgroundResource(R.drawable.ic_stop_black_24dp);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
                     }
