@@ -26,13 +26,15 @@
                 android:id="@+id/hymn_vol_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_vol_down"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
@@ -40,7 +42,8 @@
                 android:id="@+id/hymn_vol_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Volume: 0" />
+                android:text="Volume: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -55,6 +58,7 @@
                 android:id="@+id/hymn_tempo_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
@@ -62,6 +66,7 @@
                 android:id="@+id/hymn_tempo_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
@@ -69,7 +74,8 @@
                 android:id="@+id/hymn_tempo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tempo: 0" />
+                android:text="Tempo: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -84,6 +90,7 @@
                 android:id="@+id/hymn_verses_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
@@ -91,6 +98,7 @@
                 android:id="@+id/hymn_verses_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
@@ -98,7 +106,8 @@
                 android:id="@+id/hymn_verses_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Verses: 0" />
+                android:text="Verses: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -113,13 +122,15 @@
                 android:id="@+id/hymn_pitch_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_pitch_down"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
@@ -127,7 +138,8 @@
                 android:id="@+id/hymn_pitch_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pitch: 0" />
+                android:text="Pitch: 0"
+                android:textSize="24sp" />
 
         </LinearLayout>
 
@@ -235,7 +247,8 @@
                 android:id="@+id/play_button_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Play" />
+                android:text="Play"
+                android:textSize="24sp" />
         </LinearLayout>
 
     </LinearLayout>

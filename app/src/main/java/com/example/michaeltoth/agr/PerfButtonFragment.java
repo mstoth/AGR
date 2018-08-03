@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.RadioGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,13 +46,12 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
                     if (playing) {
                         playing = false;
                         mPerfPlayText.setText("Play");
-                        mPerfPlayButton.getBackground()
-                        mPerfPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                        mPerfPlayButton.setBackgroundResource(R.drawable.playt2);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                     } else {
                         playing = true;
                         mPerfPlayText.setText("Stop");
-                        mPerfPlayButton.setBackgroundResource(R.drawable.ic_stop_black_24dp);
+                        mPerfPlayButton.setBackgroundResource(R.drawable.stopt);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
                     }
 
