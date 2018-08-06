@@ -241,7 +241,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_play_arrow_black_24dp" />
+                android:background="@drawable/playt" />
 
             <TextView
                 android:id="@+id/play_button_text_view"

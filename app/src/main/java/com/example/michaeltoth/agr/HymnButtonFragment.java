@@ -284,14 +284,14 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
             public void onClick(View view) {
                 if (playing) {
                     playing = false;
-                    mPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                    mPlayButton.setBackgroundResource(R.drawable.playt);
                     tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                 } else {
                     if (paused) {
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"unpause\"}",UIHandler,getContext());
                     } else {
                         playing = true;
-                        mPlayButton.setBackgroundResource(R.drawable.ic_stop_black_24dp);
+                        mPlayButton.setBackgroundResource(R.drawable.stopt);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
                     }
                 }
@@ -472,7 +472,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                             switch (status) {
                                 case 0: {
                                     // stopped
-                                    mPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                                    mPlayButton.setBackgroundResource(R.drawable.playt);
                                     // hs.setText(R.string.play_status);
                                     playing = false;
                                     paused = false;
@@ -481,7 +481,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                 }
                                 case 1: {
                                     // playing
-                                    mPlayButton.setBackgroundResource(R.drawable.ic_stop_black_24dp);
+                                    mPlayButton.setBackgroundResource(R.drawable.stopt);
                                     // hs.setText(R.string.stop_status);
                                     playing = true;
                                     paused = false;
@@ -496,7 +496,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                 }
                                 case 3: {
                                     // paused
-                                    mPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                                    mPlayButton.setBackgroundResource(R.drawable.playt);
                                     // hs.setText(R.string.continue_status);
                                     playing = false;
                                     paused = true;

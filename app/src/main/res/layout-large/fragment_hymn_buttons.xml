@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
 
@@ -26,29 +26,31 @@
                 android:id="@+id/hymn_vol_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/upt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_vol_down"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/downt"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_vol_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text="Volume: 0"
-                android:textSize="24sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
@@ -57,29 +59,31 @@
                 android:id="@+id/hymn_tempo_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/upt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_tempo_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/downt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_tempo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text="Tempo: 0"
-                android:textSize="24sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
@@ -88,29 +92,31 @@
                 android:id="@+id/hymn_verses_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/upt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_verses_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/downt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_verses_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text="Verses: 0"
-                android:textSize="24sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
@@ -119,38 +125,39 @@
                 android:id="@+id/hymn_pitch_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/upt"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_upward_black_24dp"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_pitch_down"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/downt"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_downward_black_24dp"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_pitch_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text="Pitch: 0"
-                android:textSize="24sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
             android:orientation="horizontal">
 
             <Switch
                 android:id="@+id/include_intro_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5sp"
                 android:text="Include Introduction"
-                android:textSize="24sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -158,6 +165,7 @@
             android:id="@+id/language_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
             android:layoutDirection="ltr"
             android:orientation="horizontal"
@@ -183,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="English"
-                android:textSize="18sp" />
+                android:textSize="24dp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -193,7 +201,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Spanish"
-                android:textSize="18sp" />
+                android:textSize="24dp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -209,7 +217,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Portuguese"
-                android:textSize="18sp" />
+                android:textSize="24dp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -218,7 +226,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="French"
-                android:textSize="18sp" />
+                android:textSize="24dp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -231,7 +239,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
+            android:layout_marginBottom="40dp"
             android:gravity="center">
 
             <ImageButton
@@ -239,14 +248,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_play_arrow_black_24dp" />
+                android:background="@drawable/playt"
+                android:scaleX="2"
+                android:scaleY="2" />
 
             <TextView
                 android:id="@+id/play_button_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="20dp"
                 android:text="Play"
-                android:textSize="24sp" />
+                android:textSize="30sp" />
         </LinearLayout>
 
     </LinearLayout>
