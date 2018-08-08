@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +27,19 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
     private boolean playing, remoteActive;
     private int currentSong;
     private TextView mPerfPlayText;
+    private View myView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_perf_buttons,container,false);
-        mPerfVolUpButton = view.findViewById(R.id.perf_vol_up);
-        mPerfVolDownButton = view.findViewById(R.id.perf_vol_down);
-        mPerfVolText = view.findViewById(R.id.perf_vol_text);
-        mPerfPlayText = view.findViewById(R.id.perf_play_text);
+        myView = inflater.inflate(R.layout.fragment_perf_buttons,container,false);
+        mPerfVolUpButton = myView.findViewById(R.id.perf_vol_up);
+        mPerfVolDownButton = myView.findViewById(R.id.perf_vol_down);
+        mPerfVolText = myView.findViewById(R.id.perf_vol_text);
+        mPerfPlayText = myView.findViewById(R.id.perf_play_text);
 
         // PLAY BUTTON
-        mPerfPlayButton = (ImageButton) view.findViewById(R.id.perf_play_button);
+        mPerfPlayButton = (ImageButton) myView.findViewById(R.id.perf_play_button);
         mPerfPlayButton.setOnClickListener(new ImageButton.OnClickListener() {
 
             @Override
@@ -46,7 +48,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
                     if (playing) {
                         playing = false;
                         mPerfPlayText.setText("Play");
-                        mPerfPlayButton.setBackgroundResource(R.drawable.playt2);
+                        mPerfPlayButton.setBackgroundResource(R.drawable.playt);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                     } else {
                         playing = true;
@@ -60,16 +62,6 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
                 }
             }
         });
-
-        // VOLUME BUTTON
-//         mPerfVolUpButton.setOnLongClickListener(new ImageButton.OnLongClickListener() {
-//
-//            @Override
-//            public boolean onLongClick(View view) {
-//                Toast.makeText(getContext(),"Long Click on Up Button",Toast.LENGTH_SHORT).show();
-//                return true;
-//            }
-//        });
 
 
         mPerfVolUpButton.setOnClickListener(new ImageButton.OnClickListener(){
@@ -104,12 +96,9 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_volume_limit\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":2}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
 
-
-
-        return view;
-
-
+        return myView;
 
     }
 
@@ -165,11 +154,11 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
+        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
 
     }
 }

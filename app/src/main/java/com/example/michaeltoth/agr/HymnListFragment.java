@@ -2,6 +2,7 @@ package com.example.michaeltoth.agr;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -41,18 +42,34 @@ public class HymnListFragment extends Fragment implements TCPListener{
     private Handler UIHandler = new Handler();
     private HymnBook hymnBook;
     private boolean scrolling;
+    private boolean remoteActive;
     WheelView hymnsWheelView;
     private int currentSong;
+    private View myView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
 
-
         scrolling = false;
+        remoteActive = false;
 
-        hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
+        tcpClient = TCPCommunicator.getInstance();
+        tcpClient.addListener(this);
+        if (!tcpClient.getHymnsLoaded()) {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+        }
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_song_current\"}",UIHandler,getContext());
+        hymnBook = HymnBook.get(getContext());
+        myView = view;
+        setup();
+        return view;
+    }
+
+    public void setup() {
+        hymnBook = HymnBook.get(getContext());
+        hymnsWheelView = myView.findViewById(R.id.hymn_recycler_view);
         hymnsWheelView.setVisibleItems(1);
         mAdapter = new HymnAdapter4(getContext(),hymnBook);
         hymnsWheelView.setViewAdapter(mAdapter);
@@ -60,7 +77,6 @@ public class HymnListFragment extends Fragment implements TCPListener{
         hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
                 if (!scrolling) {
-                    //updateHymns(wheel,hymnBook,0);
                     Log.d("TAG","oldValue is " + Integer.toString(oldValue));
                     Log.d("TAG","new value is " + Integer.toString(newValue));
                 }
@@ -79,28 +95,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
 
             }
         });
-
-
-
-        tcpClient = TCPCommunicator.getInstance();
-        tcpClient.addListener(this);
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_song_current\"}",UIHandler,getContext());
-        hymnBook = HymnBook.get(getContext());
-
-        updateUI();
-
-//        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/5);
-//        view.setLayoutParams(p);
-
-        return view;
     }
-
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
@@ -115,11 +110,13 @@ public class HymnListFragment extends Fragment implements TCPListener{
                 if (messageSubTypeString.equals("hymnplayer_hymn_list")) {
                     final JSONArray hymns = theMessage.getJSONArray("value");
                     hymnBook.setHymns(hymns);
+                    if (hymns.length()>0) {
+                        tcpClient.setHymnsLoaded(true);
+                    }
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
-                            updateUI();
+                            setup();
                         }
                     });
                 }
@@ -128,9 +125,9 @@ public class HymnListFragment extends Fragment implements TCPListener{
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             hymnsWheelView.setCurrentItem(currentSong);
-                            updateUI();
+                            hymnsWheelView.invalidateWheel(false);
+                            setup();
                         }
                     });
                 }
@@ -177,32 +174,6 @@ public class HymnListFragment extends Fragment implements TCPListener{
 
     }
 
-    private class HymnAdapter extends RecyclerView.Adapter<HymnHolder> {
-        private List<Hymn> mHymns;
-
-        public HymnAdapter(List<Hymn> hymns) {
-
-            mHymns = hymns;
-        }
-
-        @NonNull
-        @Override
-        public HymnHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new HymnHolder(layoutInflater,viewGroup);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull HymnHolder hymnHolder, int i) {
-            Hymn hymn = mHymns.get(i);
-            hymnHolder.bind(hymn);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mHymns.size();
-        }
-    }
 
     private class HymnAdapter4 extends AbstractWheelTextAdapter {
         private HymnBook hymnBook = HymnBook.get(getContext());
@@ -224,7 +195,7 @@ public class HymnListFragment extends Fragment implements TCPListener{
 
         @Override
         public int getItemsCount() {
-            int s = hymns.length;
+            Log.d("HYMN","Number of items = " + hymns.length);
             return hymns.length;
         }
 

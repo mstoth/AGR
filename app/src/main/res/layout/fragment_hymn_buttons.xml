@@ -232,9 +232,10 @@
         </RadioGroup>
 
         <LinearLayout
+            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+            android:layout_margin="20dp"
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/hymn_play_button"
@@ -242,13 +243,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/playt" />
-
             <TextView
                 android:id="@+id/play_button_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:textSize="24dp"
                 android:text="Play"
-                android:textSize="24sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </LinearLayout>

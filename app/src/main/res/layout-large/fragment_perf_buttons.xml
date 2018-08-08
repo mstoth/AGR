@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="81dp"
+            android:layout_margin="40dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteX="167dp"
+            tools:layout_editor_absoluteY="475dp">
+
+            <ImageButton
+                android:id="@+id/perf_vol_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/upt"
+                android:scaleX="2"
+                android:scaleY="2" />
+
+            <ImageButton
+                android:id="@+id/perf_vol_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/downt"
+                android:scaleX="2"
+                android:scaleY="2" />
+
+            <TextView
+                android:id="@+id/perf_vol_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="Volume: 0"
+                android:textSize="32dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_margin="20dp"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/perf_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/playt"
+                android:scaleX="2"
+                android:scaleY="2" />
+
+            <TextView
+                android:id="@+id/perf_play_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="Play"
+                android:textSize="32dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout>

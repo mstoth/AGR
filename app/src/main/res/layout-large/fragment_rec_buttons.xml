@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="30dp">
+
+            <Button
+                android:id="@+id/rec_record_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:padding="30dp"
+                android:text="Record" />
+
+            <Button
+                android:id="@+id/rec_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:padding="30dp"
+                android:text="Play" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="30dp">
+
+            <Button
+                android:id="@+id/rec_stop_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:padding="30dp"
+                android:text="Stop" />
+
+            <Button
+                android:id="@+id/rec_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:padding="30dp"
+                android:text="Delete" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/counter_text_view"
+            android:layout_gravity="center"
+            android:textSize="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/status_text_view"
+            android:layout_gravity="center"
+            android:textSize="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

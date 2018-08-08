@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -282,18 +283,23 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (playing) {
-                    playing = false;
-                    mPlayButton.setBackgroundResource(R.drawable.playt);
-                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
-                } else {
-                    if (paused) {
-                        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"unpause\"}",UIHandler,getContext());
+                if (remoteActive) {
+                    if (playing) {
+                        playing = false;
+                        mPlayButton.setBackgroundResource(R.drawable.playt);
+                        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                     } else {
-                        playing = true;
-                        mPlayButton.setBackgroundResource(R.drawable.stopt);
-                        tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
+                        if (paused) {
+                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"unpause\"}",UIHandler,getContext());
+                        } else {
+                            playing = true;
+                            mPlayButton.setBackgroundResource(R.drawable.stopt);
+                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
+                        }
                     }
+
+                } else {
+                    Toast.makeText(getContext(),"Remote is not active.",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -412,6 +418,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                         public void run() {
                             versesMin = vMin;
                             versesMax = vMax;
+                            currentVerses = verses;
                             TextView versesTextView = (TextView) myView.findViewById(R.id.hymn_verses_text);
                             versesTextView.setText("Verses: " + Integer.toString(verses));
                         }
@@ -538,6 +545,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
-
+        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.michaeltoth.agr;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -49,17 +50,31 @@ public class PerfListFragment extends Fragment implements TCPListener {
 
         scrolling = false;
         remoteActive = false;
+
+        tcpClient = TCPCommunicator.getInstance();
+        tcpClient.addListener(this);
+        if (!tcpClient.getPerfsLoaded()) {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
+        }
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_song_current\"}",UIHandler,getContext());
         hymnBook = HymnBook.get(getContext());
-        hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
+        myView = view;
+        setup();
+        return view;
+    }
+
+    public void setup() {
+        hymnBook = HymnBook.get(getContext());
+        hymnsWheelView = myView.findViewById(R.id.hymn_recycler_view);
         hymnsWheelView.setVisibleItems(1);
-        mAdapter = new PerfListFragment.HymnAdapter4(getContext(),hymnBook);
+        mAdapter = new HymnAdapter4(getContext(),hymnBook);
         hymnsWheelView.setViewAdapter(mAdapter);
 
         hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
                 if (!scrolling) {
-                    Log.d("TAG","oldValue is " + Integer.toString(oldValue));
-                    Log.d("TAG","new value is " + Integer.toString(newValue));
+                    Log.d("TAG", "oldValue is " + Integer.toString(oldValue));
+                    Log.d("TAG", "new value is " + Integer.toString(newValue));
                 }
             }
         });
@@ -76,16 +91,6 @@ public class PerfListFragment extends Fragment implements TCPListener {
 
             }
         });
-
-        tcpClient = TCPCommunicator.getInstance();
-        tcpClient.addListener(this);
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_list\"}",UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_song_current\"}",UIHandler,getContext());
-
-        updateUI();
-        myView = view;
-        return view;
     }
 
     @Override
@@ -102,11 +107,13 @@ public class PerfListFragment extends Fragment implements TCPListener {
                 if (messageSubTypeString.equals("preludeplayer_list")) {
                     final JSONArray hymns = theMessage.getJSONArray("value");
                     hymnBook.setPerfs(hymns);
+                    if (hymns.length()>0) {
+                        tcpClient.setPerfsLoaded(true);
+                    }
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateUI();
-                            myView.invalidate();
+                            setup();
                         }
                     });
                 }
@@ -116,6 +123,8 @@ public class PerfListFragment extends Fragment implements TCPListener {
                         @Override
                         public void run() {
                             hymnsWheelView.setCurrentItem(currentSong);
+                            hymnsWheelView.invalidateWheel(false);
+                            setup();
                         }
                     });
                 }
@@ -139,15 +148,13 @@ public class PerfListFragment extends Fragment implements TCPListener {
         public PerfHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_perf,parent,false));
             itemView.setOnClickListener(this);
-            mTitleView = itemView.findViewById(R.id.perf_title);
-
+            mTitleView = (TextView) itemView.findViewById(R.id.perf_title);
         }
 
         public void bind(Hymn hymn) {
             mPerf = hymn;
             mTitleView.setText(hymn.getTitle());
         }
-
 
         @Override
         public void onClick(View view) {
@@ -161,35 +168,8 @@ public class PerfListFragment extends Fragment implements TCPListener {
         mAdapter = new HymnAdapter4(getContext(),hymnBook);
         hymnsWheelView.setViewAdapter(mAdapter);
         hymnsWheelView.invalidateWheel(false);
-
     }
 
-    private class PerfAdapter extends RecyclerView.Adapter<PerfListFragment.PerfHolder> {
-        private List<Hymn> mHymns;
-
-        public PerfAdapter(List<Hymn> hymns) {
-            mHymns = hymns;
-        }
-
-        @NonNull
-        @Override
-        public PerfListFragment.PerfHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new PerfListFragment.PerfHolder(layoutInflater,viewGroup);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull PerfListFragment.PerfHolder hymnHolder, int i) {
-            Hymn mHymn = mHymns.get(i);
-            hymnHolder.bind(mHymn);
-        }
-
-        @Override
-        public int getItemCount() {
-            int sz = mHymns.size();
-            return mHymns.size();
-        }
-    }
 
     private class HymnAdapter4 extends AbstractWheelTextAdapter {
         private HymnBook hymnBook = HymnBook.get(getContext());
@@ -211,6 +191,7 @@ public class PerfListFragment extends Fragment implements TCPListener {
 
         @Override
         public int getItemsCount() {
+            Log.d("PERFORMANCE","Number of items = " + hymns.length);
             return hymns.length;
         }
 

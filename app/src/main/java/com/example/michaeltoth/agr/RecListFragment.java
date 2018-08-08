@@ -39,6 +39,7 @@ public class RecListFragment extends Fragment implements TCPListener{
     private ArrayList<String> midiFiles;
     private ArrayList<String> mediaDirList;
     private boolean remoteActive;
+    private int currentSelection;
 
     @Nullable
     @Override
@@ -159,7 +160,13 @@ public class RecListFragment extends Fragment implements TCPListener{
             if (messageTypeString.equals("CPPP")) {
                 final String messageSubTypeString=theMessage.getString("mstype");
                 if (messageSubTypeString.equals("sequencer_song_number")) {
-                    // update wheel view
+                    currentSelection = theMessage.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            hymnsWheelView.setCurrentItem(currentSelection-1);
+                        }
+                    });
                 }
                 if (messageSubTypeString.equals("media_dir_list")) {
                     int i;

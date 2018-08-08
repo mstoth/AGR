@@ -119,7 +119,6 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         int h = p.height;
         p.height  = (int)(height/5);
         view.setLayoutParams(p);
-        view.invalidate();
     }
 
     public void switchToPerfFragment() {
@@ -135,7 +134,6 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         int h = p.height;
         p.height  = (int)(height/4);
         view.setLayoutParams(p);
-
     }
 
     public void switchToRecFragment() {

@@ -14,11 +14,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
@@ -34,6 +37,8 @@ public class TCPCommunicator {
     private static Socket s;
     private static Handler UIHandler;
     private static Context appContext;
+    private static boolean hymnsLoaded = false;
+    private static boolean perfsLoaded = false;
     public static boolean isConnected = false;
 
     private TCPCommunicator()
@@ -50,6 +55,22 @@ public class TCPCommunicator {
         return uniqInstance;
     }
 
+    public void setHymnsLoaded(boolean loaded) {
+        hymnsLoaded = loaded;
+    }
+
+    public boolean getHymnsLoaded() {
+        return hymnsLoaded;
+    }
+
+    public void setPerfsLoaded(boolean loaded) {
+        perfsLoaded = loaded;
+    }
+
+    public boolean getPerfsLoaded() {
+        return perfsLoaded;
+    }
+
     public  TCPWriterErrors init(String host,int port)
     {
         setServerHost(host);
@@ -58,12 +79,13 @@ public class TCPCommunicator {
         task.execute(new Void[0]);
         return TCPWriterErrors.OK;
     }
-    public static TCPWriterErrors writeStringToSocket(final String msg,Handler handle, Context context) {
+    public static TCPWriterErrors writeStringToSocket(final String msg, final Handler handle, Context context) {
         UIHandler = handle;
         appContext = context;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                Timer timer = new Timer();
                 try {
                     out.write(msg);
                     out.flush();
@@ -76,7 +98,6 @@ public class TCPCommunicator {
                         public void run() {
                             // TODO Auto-generated method stub
                             Toast.makeText(appContext ,"a problem has occured, the app might not be able to reach the server" + e.toString(), Toast.LENGTH_LONG).show();
-
                         }
                     });
 
@@ -265,4 +286,13 @@ public class TCPCommunicator {
 
 
     public enum TCPWriterErrors{UnknownHostException,IOException,otherProblem,OK}
+
+
+    class RetrySend extends TimerTask {
+
+        @Override
+        public void run() {
+
+        }
+    }
 }

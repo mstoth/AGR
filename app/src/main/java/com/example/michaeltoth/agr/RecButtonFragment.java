@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,6 +122,7 @@ public class RecButtonFragment extends Fragment implements TCPListener {
         tcpClient.addListener(this);
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}",UIHandler,getContext());
 
         return view;
     }
@@ -180,9 +182,6 @@ public class RecButtonFragment extends Fragment implements TCPListener {
 //                        }
 //                    });
 //                }
-                if (messageSubTypeString.equals("sequencer_song_number")) {
-                    currentSelection = obj.getInt("value");
-                }
                 if (messageSubTypeString.equals("sequencer_measure")) {
                     final String msg = "Counter: " + obj.getInt("value");
                     getActivity().runOnUiThread(new Runnable() {
@@ -294,6 +293,7 @@ public class RecButtonFragment extends Fragment implements TCPListener {
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
+        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
 
     }
 }

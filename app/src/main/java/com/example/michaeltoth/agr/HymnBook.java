@@ -33,14 +33,18 @@ public class HymnBook {
         mRecs = new ArrayList<>();
         recArrayList = new ArrayList<String>();
         mRecordings = new ArrayList<>();
+        hymnArrayList = new ArrayList<String>();
+        perfArrayList = new ArrayList<String>();
 
         for (int i=0; i<100; i++ ) {
-//            Hymn hymn = new Hymn();
-//            hymn.setTitle("Hymn #" + i);
-//            mHymns.add(hymn);
-//            Hymn perf = new Hymn();
-//            perf.setTitle("Performance #" + i);
-//            mPerfs.add(perf);
+            Hymn hymn = new Hymn();
+            hymn.setTitle("Hymn #" + i);
+            mHymns.add(hymn);
+            hymnArrayList.add(" ");
+            Hymn perf = new Hymn();
+            perf.setTitle("Performance #" + i);
+            mPerfs.add(perf);
+            perfArrayList.add(" ");
             Hymn rec = new Hymn();
             rec.setTitle("Selection " + (i+1));
             mRecs.add(rec);
