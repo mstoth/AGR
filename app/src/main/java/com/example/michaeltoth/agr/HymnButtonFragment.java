@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -44,9 +45,14 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
     int tempoMax;
     int pitchMin;
     int pitchMax;
+    private Handler repeatUpdateHandler = new Handler();
+    private boolean mAutoIncrement = false;
+    private boolean mAutoDecrement = false;
 
     TextView volTextView;
     View myView;
+
+    static final int REP_DELAY=50;
 
     @Nullable
     @Override
@@ -126,6 +132,25 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 });
             }
         });
+        // LONG CLICK
+        mHymnTempoUpButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mAutoIncrement = true;
+                repeatUpdateHandler.post( new RptTempoUpdater() );
+                return false;
+            }
+        });
+        mHymnTempoUpButton.setOnTouchListener( new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if( (event.getAction()==MotionEvent.ACTION_UP || event.getAction()==MotionEvent.ACTION_CANCEL)
+                        && mAutoIncrement ){
+                    mAutoIncrement = false;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\",\"value\":" + Integer.toString(currentTempo) + "}",UIHandler,getContext());
+                return false;
+            }
+        });
         //DOWN
         mHymnTempoDownButton = myView.findViewById(R.id.hymn_tempo_down);
         mHymnTempoDownButton.setOnClickListener(new ImageButton.OnClickListener(){
@@ -136,13 +161,31 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 if (currentTempo < tempoMin) {
                     currentTempo = tempoMin;
                 }
-                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\",\"value\":" + Integer.toString(currentTempo) + "}",UIHandler,getContext());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mTempoText.setText("Tempo: " + currentTempo);
                     }
                 });
+            }
+        });
+        // LONG CLICK
+        mHymnTempoDownButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mAutoDecrement = true;
+                repeatUpdateHandler.post( new RptTempoUpdater() );
+                return false;
+            }
+        });
+        mHymnTempoDownButton.setOnTouchListener( new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if( (event.getAction()==MotionEvent.ACTION_UP || event.getAction()==MotionEvent.ACTION_CANCEL)
+                        && mAutoDecrement ){
+                    mAutoDecrement = false;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_tempo_adjust\",\"value\":" + Integer.toString(currentTempo) + "}",UIHandler,getContext());
+                return false;
             }
         });
 
@@ -197,7 +240,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 if (currentPitch > pitchMax) {
                     currentPitch = pitchMax;
                 }
-                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -206,6 +248,26 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 });
             }
         });
+        // LONG CLICK
+        mHymnPitchUpButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mAutoIncrement = true;
+                repeatUpdateHandler.post( new RptPitchUpdater() );
+                return false;
+            }
+        });
+        mHymnPitchUpButton.setOnTouchListener( new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if( (event.getAction()==MotionEvent.ACTION_UP || event.getAction()==MotionEvent.ACTION_CANCEL)
+                        && mAutoIncrement ){
+                    mAutoIncrement = false;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
+                return false;
+            }
+        });
+
         // DOWN
         mHymnPitchDownButton = myView.findViewById(R.id.hymn_pitch_down);
         mHymnPitchDownButton.setOnClickListener(new ImageButton.OnClickListener(){
@@ -216,7 +278,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 if (currentPitch > pitchMax) {
                     currentPitch = pitchMax;
                 }
-                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -225,7 +286,27 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                 });
             }
         });
+        // LONG CLICK
+        mHymnPitchDownButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mAutoDecrement = true;
+                repeatUpdateHandler.post( new RptPitchUpdater() );
+                return false;
+            }
+        });
+        mHymnPitchDownButton.setOnTouchListener( new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if( (event.getAction()==MotionEvent.ACTION_UP || event.getAction()==MotionEvent.ACTION_CANCEL)
+                        && mAutoDecrement ){
+                    mAutoDecrement = false;
+                }
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
+                return false;
+            }
+        });
 
+        // INTRODUCTION SWITCH
         Switch introSwitch = (Switch) myView.findViewById(R.id.include_intro_switch);
         introSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -322,6 +403,65 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"organ_lds_is\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_intro_play\"}",UIHandler,getContext());
+    }
+
+    // UPDATERS
+    // TEMPO
+    class RptTempoUpdater implements Runnable {
+        public void run() {
+            if( mAutoIncrement ){
+                incrementTempo();
+                repeatUpdateHandler.postDelayed( new RptTempoUpdater(), REP_DELAY );
+            } else if( mAutoDecrement ){
+                decrementTempo();
+                repeatUpdateHandler.postDelayed( new RptTempoUpdater(), REP_DELAY );
+            }
+        }
+    }
+
+    public void incrementTempo() {
+        currentTempo = currentTempo + 1;
+        if (currentTempo > tempoMax) {
+            currentTempo = tempoMax;
+        }
+        mTempoText.setText("Tempo: " + currentTempo);
+    }
+
+    public void decrementTempo() {
+        currentTempo = currentTempo - 1;
+        if (currentTempo < tempoMin) {
+            currentTempo = tempoMin;
+        }
+        mTempoText.setText("Tempo: " + currentTempo);
+    }
+
+    // PITCH
+    class RptPitchUpdater implements Runnable {
+        public void run() {
+            if( mAutoIncrement ){
+                incrementPitch();
+                repeatUpdateHandler.postDelayed( new RptPitchUpdater(), REP_DELAY );
+            } else if( mAutoDecrement ){
+                decrementPitch();
+                repeatUpdateHandler.postDelayed( new RptPitchUpdater(), REP_DELAY );
+            }
+        }
+    }
+
+    public void incrementPitch() {
+        currentPitch = currentPitch + 1;
+        if (currentPitch > pitchMax) {
+            currentPitch = pitchMax;
+        }
+        mPitchTextView.setText("Pitch: " + currentPitch);
+    }
+
+    public void decrementPitch() {
+        currentPitch = currentPitch - 1;
+        if (currentPitch < 0) {
+            currentPitch = pitchMin;
+        }
+        mPitchTextView.setText("Pitch: " + currentPitch);
     }
 
     @Override
@@ -467,6 +607,8 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     break;
                                 }
                             }
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_hymn_list\"}",UIHandler,getContext());
+
                         }
                     });
                 }
