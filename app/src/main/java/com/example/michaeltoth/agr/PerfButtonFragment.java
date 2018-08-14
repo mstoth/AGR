@@ -37,6 +37,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
         mPerfVolDownButton = myView.findViewById(R.id.perf_vol_down);
         mPerfVolText = myView.findViewById(R.id.perf_vol_text);
         mPerfPlayText = myView.findViewById(R.id.perf_play_text);
+        tcpClient = TCPCommunicator.getInstance();
 
         // PLAY BUTTON
         mPerfPlayButton = (ImageButton) myView.findViewById(R.id.perf_play_button);
@@ -158,7 +159,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
-        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
+        // Log.d("TIMER","isConnectedNow is " + isConnectedNow);
 
     }
 }

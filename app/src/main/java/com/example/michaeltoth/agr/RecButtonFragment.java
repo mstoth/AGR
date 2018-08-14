@@ -118,6 +118,7 @@ public class RecButtonFragment extends Fragment implements TCPListener {
             }
         });
 
+        tcpClient = TCPCommunicator.getInstance();
 
         tcpClient.addListener(this);
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
@@ -293,7 +294,7 @@ public class RecButtonFragment extends Fragment implements TCPListener {
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
-        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
+        // Log.d("TIMER","isConnectedNow is " + isConnectedNow);
 
     }
 }

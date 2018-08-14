@@ -467,12 +467,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
         try {
             String messageSubTypeString;
             JSONObject obj = theMessage;
@@ -687,6 +681,6 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
 
     @Override
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
-        Log.d("TIMER","isConnectedNow is " + isConnectedNow);
+        // Log.d("TIMER","isConnectedNow is " + isConnectedNow);
     }
 }

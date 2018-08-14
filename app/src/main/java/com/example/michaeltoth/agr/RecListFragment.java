@@ -57,8 +57,8 @@ public class RecListFragment extends Fragment implements TCPListener{
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
                 if (!scrolling) {
                     //updateHymns(wheel,hymnBook,0);
-                    Log.d("TAG","oldValue is " + Integer.toString(oldValue));
-                    Log.d("TAG","new value is " + Integer.toString(newValue));
+                    // Log.d("TAG","oldValue is " + Integer.toString(oldValue));
+                    // Log.d("TAG","new value is " + Integer.toString(newValue));
                 }
             }
         });
@@ -69,7 +69,7 @@ public class RecListFragment extends Fragment implements TCPListener{
             }
             public void onScrollingFinished(WheelView wheel) {
                 scrolling = false;
-                Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
+                // Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
                 tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()+1) + "}",
                         UIHandler,getContext());
 
@@ -83,7 +83,14 @@ public class RecListFragment extends Fragment implements TCPListener{
 
 
         tcpClient = TCPCommunicator.getInstance();
-        tcpClient.addListener(this);
+        if (!tcpClient.isConnected) {
+            tcpClient.setServerHost("192.168.1.4");
+            tcpClient.setServerPort(10002);
+            ConnectToServer();
+        } else {
+            tcpClient.addListener(this);
+        }
+
 
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
@@ -102,6 +109,11 @@ public class RecListFragment extends Fragment implements TCPListener{
 //        view.setLayoutParams(p);
 
         return view;
+    }
+    private void ConnectToServer() {
+        //tcpClient = TCPCommunicator.getInstance();
+        tcpClient.init("192.168.1.4",10002);
+        TCPCommunicator.addListener(this);
     }
 
     private class RecHolder extends RecyclerView.ViewHolder {
@@ -155,7 +167,7 @@ public class RecListFragment extends Fragment implements TCPListener{
 
             final String messageTypeString=theMessage.getString("mtype");
 
-            Log.d("DEBUG",messageTypeString);
+            // Log.d("DEBUG",messageTypeString);
 
             if (messageTypeString.equals("CPPP")) {
                 final String messageSubTypeString=theMessage.getString("mstype");

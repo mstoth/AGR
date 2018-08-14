@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
+// import android.util.Log;
 import android.widget.Toast;
 
 public class TCPCommunicator {
@@ -40,6 +40,12 @@ public class TCPCommunicator {
     private static boolean hymnsLoaded = false;
     private static boolean perfsLoaded = false;
     public static boolean isConnected = false;
+    private static MainActivity mainActivity;
+
+    public void reset() {
+        uniqInstance = null;
+        isConnected = false;
+    }
 
     private TCPCommunicator()
     {
@@ -55,6 +61,9 @@ public class TCPCommunicator {
         return uniqInstance;
     }
 
+    public void setMainActiity(MainActivity ma) {
+        mainActivity = ma;
+    }
     public void setHymnsLoaded(boolean loaded) {
         hymnsLoaded = loaded;
     }
@@ -82,25 +91,27 @@ public class TCPCommunicator {
     public static TCPWriterErrors writeStringToSocket(final String msg, final Handler handle, Context context) {
         UIHandler = handle;
         appContext = context;
+        if (out==null) {
+            return TCPWriterErrors.otherProblem;
+        }
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Timer timer = new Timer();
                 try {
                     out.write(msg);
                     out.flush();
-                    Log.i("TcpClient", "sent: " + msg);
+                    // Log.i("TcpClient", "sent: " + msg);
 
                 } catch(final Exception e) {
                     UIHandler.post(new Runnable() {
-
                         @Override
                         public void run() {
                             // TODO Auto-generated method stub
-                            Toast.makeText(appContext ,"a problem has occured, the app might not be able to reach the server" + e.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(appContext ,"Sorry, there is a problem connecting with the organ. \n" + e.toString(), Toast.LENGTH_LONG).show();
+//                            mainActivity.restartActivity();
+//                            isConnected = false;
                         }
                     });
-
                 }
             }
         };
@@ -124,7 +135,7 @@ public class TCPCommunicator {
                     String outMsg = obj.get(EnumsAndStatics.MESSAGE_CONTENT_FOR_JSON).toString();
                     out.write(outMsg + "\n");
                     out.flush();
-                    Log.i("TcpClient", "sent: " + outMsg);
+                    // Log.i("TcpClient", "sent: " + outMsg);
                 }
                 catch(Exception e)
                 {
@@ -135,7 +146,8 @@ public class TCPCommunicator {
                         @Override
                         public void run() {
                             // TODO Auto-generated method stub
-                            Toast.makeText(appContext ,"a problem has occured, the app might not be able to reach the server. \n" + ef.getCause(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(appContext ,"Sorry, there is a problem connecting to the organ. \n" + ef.getCause(), Toast.LENGTH_SHORT).show();
+                            mainActivity.restartActivity();
                         }
                     });
                 }
@@ -238,7 +250,7 @@ public class TCPCommunicator {
                                     JSONObject j = new JSONObject(partial);
                                     for (TCPListener listener : allListeners)
                                         listener.onTCPMessageRecieved(j);
-                                    Log.i("TcpClient", "received: " + partial);
+                                    // Log.i("TcpClient", "received: " + partial);
                                     partial = "";
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -250,8 +262,10 @@ public class TCPCommunicator {
 
             } catch (UnknownHostException e) {
                 e.printStackTrace();
+                mainActivity.restartActivity();
             } catch (IOException e) {
                 e.printStackTrace();
+                mainActivity.restartActivity();
             }
 
             return null;

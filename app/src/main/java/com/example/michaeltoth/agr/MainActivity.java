@@ -1,6 +1,9 @@
 package com.example.michaeltoth.agr;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -56,7 +59,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     };
 
     private void ConnectToServer() {
-        tcpClient = TCPCommunicator.getInstance();
+        //tcpClient = TCPCommunicator.getInstance();
         tcpClient.init("192.168.1.4",10002);
         TCPCommunicator.addListener(this);
     }
@@ -71,6 +74,8 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         tcpClient = TCPCommunicator.getInstance();
+        tcpClient.setMainActiity(this);
+
         if (!tcpClient.isConnected) {
             tcpClient.setServerHost("192.168.1.4");
             tcpClient.setServerPort(10002);
@@ -159,7 +164,7 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
 
             final String messageTypeString=theMessage.getString("mtype");
 
-            Log.d("DEBUG",messageTypeString);
+            // Log.d("DEBUG",messageTypeString);
 
             if (messageTypeString.equals("GIRP")) {
                 final String msg = theMessage.getString("copyright");
@@ -212,6 +217,36 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
 
         }
     }
+
+    public void restartActivity()
+    {
+        runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+//                              Intent mIntent = getIntent();
+//                              finish();
+//                              tcpClient.reset();
+//                              startActivity(mIntent);
+                                tcpClient.reset();
+                          }
+                      });
+    }
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//                builder.setMessage("Restarting Allen Genisys Remote").setTitle("Alert");
+//                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        Intent mIntent = getIntent();
+//                        finish();
+//                        tcpClient.reset();
+//                        startActivity(mIntent);
+//                    }
+//                });
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            }
+//        });
+
+
 
 
 }
