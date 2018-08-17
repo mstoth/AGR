@@ -458,7 +458,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
 
     public void decrementPitch() {
         currentPitch = currentPitch - 1;
-        if (currentPitch < 0) {
+        if (currentPitch < pitchMin) {
             currentPitch = pitchMin;
         }
         mPitchTextView.setText("Pitch: " + currentPitch);
