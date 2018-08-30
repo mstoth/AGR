@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="4dp"
         android:orientation="vertical"
@@ -18,9 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:layout_editor_absoluteX="167dp"
-            tools:layout_editor_absoluteY="475dp">
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/hymn_vol_up"
@@ -43,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Volume: 0"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
 
@@ -75,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tempo: 0"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
 
@@ -107,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Verses: 0"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
 
@@ -139,7 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pitch: 0"
-                android:textSize="24sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
 
@@ -232,10 +230,10 @@
         </RadioGroup>
 
         <LinearLayout
-            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_margin="20dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center">
 
             <ImageButton
                 android:id="@+id/hymn_play_button"
@@ -243,12 +241,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/playt" />
+
             <TextView
                 android:id="@+id/play_button_text_view"
-                android:textSize="24dp"
-                android:text="Play"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="Play"
+                android:textSize="24dp" />
         </LinearLayout>
 
     </LinearLayout>

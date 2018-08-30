@@ -244,6 +244,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                     @Override
                     public void run() {
                         mPitchTextView.setText("Pitch: " + currentPitch);
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
                     }
                 });
             }
@@ -275,13 +276,15 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
             @Override
             public void onClick(View view) {
                 currentPitch = currentPitch - 1;
-                if (currentPitch > pitchMax) {
-                    currentPitch = pitchMax;
+                if (currentPitch < pitchMin) {
+                    currentPitch = pitchMin;
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mPitchTextView.setText("Pitch: " + currentPitch);
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"hymnplayer_pitch_adjust\",\"value\":" + Integer.toString(currentPitch) + "}",UIHandler,getContext());
+
                     }
                 });
             }
