@@ -68,6 +68,8 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
+
+
         hymnBook = HymnBook.get(this);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -175,6 +177,11 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
                             String s = theMessage.getString("copyright");
                             mHomeTextView = findViewById(R.id.home_text_view);
                             mHomeTextView.setText(s);
+
+                            String versionName = BuildConfig.VERSION_NAME;
+                            versionName = mHomeTextView.getText() + " Version: " + versionName;
+                            mHomeTextView.setText(versionName);
+
                             View v = findViewById(R.id.list_container);
                             ViewGroup.LayoutParams lp = v.getLayoutParams();
                             lp.height = MATCH_PARENT;

@@ -94,6 +94,15 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
 
         tcpClient.addListener(this);
 
+        TCPCommunicator.TCPWriterErrors e;
+        e=tcpClient.writeStringToSocket("{\"mtype\":\"GIRQ\"}",UIHandler,getContext());
+        if (e== TCPCommunicator.TCPWriterErrors.otherProblem) {
+            // no connection
+            Toast.makeText(getContext(),"No Connection to Organ...",Toast.LENGTH_SHORT).show();
+            tcpClient.init("192.168.1.4",10002);
+            TCPCommunicator.addListener(this);
+        }
+
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"preludeplayer_volume_limit\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":2}",UIHandler,getContext());

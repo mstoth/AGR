@@ -108,8 +108,10 @@ public class TCPCommunicator {
                         public void run() {
                             // TODO Auto-generated method stub
                             Toast.makeText(appContext ,"Sorry, there is a problem connecting with the organ. \n" + e.toString(), Toast.LENGTH_LONG).show();
-//                            mainActivity.restartActivity();
-//                            isConnected = false;
+                            // mainActivity.restartActivity();
+                            isConnected = false;
+                            out=null;
+                            in=null;
                         }
                     });
                 }
@@ -147,7 +149,11 @@ public class TCPCommunicator {
                         public void run() {
                             // TODO Auto-generated method stub
                             Toast.makeText(appContext ,"Sorry, there is a problem connecting to the organ. \n" + ef.getCause(), Toast.LENGTH_SHORT).show();
-                            mainActivity.restartActivity();
+                            // mainActivity.restartActivity();
+                            isConnected = false;
+                            out=null;
+                            in=null;
+
                         }
                     });
                 }

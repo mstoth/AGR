@@ -121,6 +121,16 @@ public class RecButtonFragment extends Fragment implements TCPListener {
         tcpClient = TCPCommunicator.getInstance();
 
         tcpClient.addListener(this);
+
+        TCPCommunicator.TCPWriterErrors e;
+        e=tcpClient.writeStringToSocket("{\"mtype\":\"GIRQ\"}",UIHandler,getContext());
+        if (e== TCPCommunicator.TCPWriterErrors.otherProblem) {
+            // no connection
+            Toast.makeText(getContext(),"No Connection to Organ...",Toast.LENGTH_SHORT).show();
+            tcpClient.init("192.168.1.4",10002);
+            TCPCommunicator.addListener(this);
+        }
+
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}",UIHandler,getContext());

@@ -390,6 +390,17 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
 
 
         tcpClient.addListener(this);
+
+
+        TCPCommunicator.TCPWriterErrors e;
+        e=tcpClient.writeStringToSocket("{\"mtype\":\"GIRQ\"}",UIHandler,getContext());
+        if (e== TCPCommunicator.TCPWriterErrors.otherProblem) {
+            // no connection
+            Toast.makeText(getContext(),"No Connection to Organ...",Toast.LENGTH_SHORT).show();
+            tcpClient.init("192.168.1.4",10002);
+            TCPCommunicator.addListener(this);
+        }
+
         sendHymnStartup();
         return myView;
     }
