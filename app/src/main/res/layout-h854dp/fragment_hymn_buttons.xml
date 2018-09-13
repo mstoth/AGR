@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="8sp"
+        android:layout_marginLeft="4sp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -18,68 +18,86 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginBottom="10sp"
+            tools:layout_editor_absoluteX="167dp"
+            tools:layout_editor_absoluteY="475dp">
 
             <ImageButton
                 android:id="@+id/hymn_vol_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:background="@drawable/upt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_vol_down"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_margin="20sp"
+                android:background="@drawable/downt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_vol_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:text="Volume: 0"
-                android:textSize="22sp" />
+                android:textSize="30sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal"
-            tools:layout_editor_absoluteX="167dp"
-            tools:layout_editor_absoluteY="475dp">
+            tools:layout_editor_absoluteX="167sp"
+            tools:layout_editor_absoluteY="475sp">
 
             <ImageButton
                 android:id="@+id/hymn_tempo_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:background="@drawable/upt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_tempo_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:background="@drawable/downt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Down" />
 
             <TextView
                 android:id="@+id/hymn_tempo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:text="Tempo: 0"
-                android:textSize="22sp" />
+                android:textSize="30dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
@@ -88,16 +106,22 @@
                 android:id="@+id/hymn_verses_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/upt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_verses_down"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:background="@drawable/downt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Down" />
 
             <TextView
@@ -105,13 +129,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Verses: 0"
-                android:textSize="22sp" />
+                android:textSize="30sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10sp"
             android:orientation="horizontal"
             tools:layout_editor_absoluteX="167dp"
             tools:layout_editor_absoluteY="475dp">
@@ -120,16 +145,22 @@
                 android:id="@+id/hymn_pitch_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                android:background="@drawable/upt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Up" />
 
             <ImageButton
                 android:id="@+id/hymn_pitch_down"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_margin="20sp"
+                android:background="@drawable/downt"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_downward_black_24dp"
+                android:scaleX="2"
+                android:scaleY="2"
                 android:text="Down" />
 
             <TextView
@@ -137,20 +168,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pitch: 0"
-                android:textSize="22sp" />
+                android:textSize="30sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="40sp"
             android:orientation="horizontal">
 
             <Switch
                 android:id="@+id/include_intro_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Include Introduction h854" />
+                android:text="Include Introduction h854"
+                android:textSize="30sp" />
 
         </LinearLayout>
 
@@ -158,6 +191,7 @@
             android:id="@+id/language_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
             android:layoutDirection="ltr"
             android:orientation="horizontal"
@@ -183,7 +217,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="English"
-                android:textSize="10sp" />
+                android:textSize="22sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -193,7 +227,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Spanish"
-                android:textSize="10sp" />
+                android:textSize="22sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -209,7 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Portuguese"
-                android:textSize="10sp" />
+                android:textSize="22sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintLeft_toLeftOf="parent" -->
 
@@ -218,7 +252,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="French"
-                android:textSize="10sp" />
+                android:textSize="22sp" />
             <!--app:layout_constraintBottom_toBottomOf="parent"-->
             <!--app:layout_constraintRight_toRightOf="parent" -->
 
@@ -231,8 +265,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_height="72dp"
+            android:layout_marginBottom="10sp"
             android:gravity="center">
 
             <ImageButton
@@ -240,14 +274,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@drawable/playt" />
+                android:background="@drawable/playt"
+                android:scaleX="2"
+                android:scaleY="2" />
 
             <TextView
                 android:id="@+id/play_button_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
                 android:text="Play"
-                android:textSize="24dp" />
+                android:textSize="30sp" />
         </LinearLayout>
 
     </LinearLayout>

@@ -6,8 +6,8 @@ android {
         applicationId "com.allenorgan.michaeltoth.agr"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 12
-        versionName "1.3"
+        versionCode 13
+        versionName "1.4"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
