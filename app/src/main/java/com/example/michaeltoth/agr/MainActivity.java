@@ -25,15 +25,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 
-public class MainActivity extends DoubleFragmentActivity implements TCPListener {
+public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener {
 
+    private static final String tag = "MAIN_ACTIVITY";
     private TCPCommunicator tcpClient;
+    private IRecButtonFragment mIRecButtonFragment;
+    private String mSelectedTitle;
     private Handler UIHandler = new Handler();
     private TextView mHomeTextView;
     private HymnBook hymnBook;
+    private List<Fragment> fragmentList;
+    private RecButtonFragment mRecButtonFragment;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -144,10 +151,17 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
     }
 
     public void switchToRecFragment() {
+        final String tag = "REC_FRAGMENT";
         tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
+        mRecButtonFragment = new RecButtonFragment();
+
+        manager.beginTransaction().replace(R.id.button_container, mRecButtonFragment).commit();
+
         manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
-        manager.beginTransaction().replace(R.id.button_container, new RecButtonFragment()).commit();
+
+
+
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         int height=display.getHeight();
@@ -238,6 +252,14 @@ public class MainActivity extends DoubleFragmentActivity implements TCPListener 
                           }
                       });
     }
+
+
+    @Override
+    public void selectedTitleExists(Boolean exists) {
+        Boolean titleExists = exists;
+        mRecButtonFragment.selectedRecordingExists(exists);
+    }
+
 //                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 //                builder.setMessage("Restarting Allen Genisys Remote").setTitle("Alert");
 //                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

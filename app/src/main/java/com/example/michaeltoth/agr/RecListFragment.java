@@ -40,6 +40,19 @@ public class RecListFragment extends Fragment implements TCPListener{
     private ArrayList<String> mediaDirList;
     private boolean remoteActive;
     private int currentSelection;
+    private static final String tag = "REC_LIST";
+    private IMainActivity iMainActivity;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        iMainActivity = (IMainActivity) getActivity();
+    }
 
     @Nullable
     @Override
@@ -69,6 +82,11 @@ public class RecListFragment extends Fragment implements TCPListener{
             }
             public void onScrollingFinished(WheelView wheel) {
                 scrolling = false;
+                if (hasMidiFile(hymnsWheelView.getCurrentItem())) {
+                    iMainActivity.selectedTitleExists(true);
+                } else {
+                    iMainActivity.selectedTitleExists(false);
+                }
                 // Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
                 tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()+1) + "}",
                         UIHandler,getContext());
@@ -99,6 +117,12 @@ public class RecListFragment extends Fragment implements TCPListener{
 
         hymnBook = HymnBook.get(getContext());
         updateUI();
+
+        if (hasMidiFile(hymnsWheelView.getCurrentItem())) {
+            iMainActivity.selectedTitleExists(true);
+        } else {
+            iMainActivity.selectedTitleExists(false);
+        }
 
 //        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 //        Display display = wm.getDefaultDisplay();
@@ -274,8 +298,10 @@ public class RecListFragment extends Fragment implements TCPListener{
             txt.setText(String.format("Selection %02d",index+1));
             if (hasMidiFile(index)) {
                 txt.setTextColor(Color.BLACK);
+                //iMainActivity.selectedTitleExists(true);
             } else {
                 txt.setTextColor(Color.RED);
+                //iMainActivity.selectedTitleExists(false);
             }
             return view;
         }

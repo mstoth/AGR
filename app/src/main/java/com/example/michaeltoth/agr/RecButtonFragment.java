@@ -1,5 +1,6 @@
 package com.example.michaeltoth.agr;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -21,8 +22,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class RecButtonFragment extends Fragment implements TCPListener {
+public class RecButtonFragment extends Fragment implements TCPListener, IRecButtonFragment {
     private boolean remoteActive;
+    private boolean selectionExists;
     private View myView;
     private Button playButton;
     private Handler UIHandler = new Handler();
@@ -36,7 +38,18 @@ public class RecButtonFragment extends Fragment implements TCPListener {
     private ArrayList<String> midiFiles;
     private ArrayList<String> titles;
     WheelView hymnsWheelView;
+    private IMainActivity mIMainActivity;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mIMainActivity = (IMainActivity) getActivity();
+    }
 
     @Nullable
     @Override
@@ -306,5 +319,25 @@ public class RecButtonFragment extends Fragment implements TCPListener {
     public void onTCPConnectionStatusChanged(boolean isConnectedNow) {
         // Log.d("TIMER","isConnectedNow is " + isConnectedNow);
 
+    }
+
+    @Override
+    public void selectedRecordingExists(Boolean exists) {
+
+        selectionExists = exists;
+        if (recordButton==null) {
+            return;
+        }
+        if (selectionExists) {
+            recordButton.setEnabled(false);
+            stopButton.setEnabled(false);
+            deleteButton.setEnabled(true);
+            playButton.setEnabled(true);
+        } else {
+            recordButton.setEnabled(true);
+            stopButton.setEnabled(false);
+            playButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
     }
 }
