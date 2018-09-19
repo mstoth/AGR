@@ -69,9 +69,9 @@ public class RecListFragment extends Fragment implements TCPListener{
         hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
                 if (!scrolling) {
-                    //updateHymns(wheel,hymnBook,0);
-                    // Log.d("TAG","oldValue is " + Integer.toString(oldValue));
-                    // Log.d("TAG","new value is " + Integer.toString(newValue));
+//                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()+1) + "}",
+//                            UIHandler,getContext());
+
                 }
             }
         });
@@ -114,6 +114,7 @@ public class RecListFragment extends Fragment implements TCPListener{
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}", UIHandler,getContext());
 
         hymnBook = HymnBook.get(getContext());
         updateUI();
@@ -195,11 +196,14 @@ public class RecListFragment extends Fragment implements TCPListener{
 
             if (messageTypeString.equals("CPPP")) {
                 final String messageSubTypeString=theMessage.getString("mstype");
+                final boolean hasSel;
                 if (messageSubTypeString.equals("sequencer_song_number")) {
                     currentSelection = theMessage.getInt("value");
+                    hasSel = hasMidiFile(currentSelection);
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            iMainActivity.selectedTitleExists(hasSel);
                             hymnsWheelView.setCurrentItem(currentSelection-1);
                         }
                     });

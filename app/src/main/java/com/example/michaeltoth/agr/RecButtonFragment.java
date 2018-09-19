@@ -165,6 +165,10 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
             final String messageTypeString=obj.getString("mtype");
             if (messageTypeString.equals("CPPP")) {
                 final String messageSubTypeString = obj.getString("mstype");
+                if (messageSubTypeString.equals("sequencer_song_number")) {
+                    currentSelection = obj.getInt("value");
+
+                }
                 if (messageSubTypeString.equals("seqeng_remote_active")) {
                     remoteActive = obj.getBoolean("value");
                     if (!remoteActive) {
