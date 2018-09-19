@@ -34,6 +34,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
     private TCPCommunicator tcpClient;
     private Handler UIHandler = new Handler();
     private boolean remoteActive;
+    private Switch includeIntroSwitch;
     int currentSong, currentVolume, currentPitch, currentTempo, currentVerses;
     boolean playing;
     boolean paused;
@@ -62,6 +63,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
         mTempoText = myView.findViewById(R.id.hymn_tempo_text);
         mVersesText = myView.findViewById(R.id.hymn_verses_text);
         mPitchTextView = myView.findViewById(R.id.hymn_pitch_text);
+        includeIntroSwitch = myView.findViewById(R.id.include_intro_switch);
         tcpClient = TCPCommunicator.getInstance();
         remoteActive = false;
         mPlayButtonTextView = myView.findViewById(R.id.play_button_text_view);
@@ -638,7 +640,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     mHymnPitchDownButton.setEnabled(true);
                                     mHymnPitchUpButton.setEnabled(true);
                                     mPitchTextView.setEnabled(true);
-
+                                    includeIntroSwitch.setEnabled(true);
                                     paused = false;
                                     mPlayButtonTextView.setText("Play");
                                     break;
@@ -655,7 +657,7 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     mHymnPitchDownButton.setEnabled(false);
                                     mHymnPitchUpButton.setEnabled(false);
                                     mPitchTextView.setEnabled(false);
-
+                                    includeIntroSwitch.setEnabled(false);
                                     mPlayButtonTextView.setText("Stop");
                                     break;
                                 }

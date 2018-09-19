@@ -183,7 +183,7 @@
                 android:id="@+id/include_intro_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Include Introduction Large"
+                android:text="Include Introduction"
                 android:textSize="30sp" />
 
         </LinearLayout>

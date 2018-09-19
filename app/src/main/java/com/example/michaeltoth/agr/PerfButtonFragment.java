@@ -50,9 +50,16 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
                         playing = false;
                         mPerfPlayText.setText("Play");
                         mPerfPlayButton.setBackgroundResource(R.drawable.playt);
+                        mPerfVolText.setEnabled(true);
+                        mPerfVolDownButton.setEnabled(true);
+                        mPerfVolUpButton.setEnabled(true);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}",UIHandler,getContext());
                     } else {
                         playing = true;
+                        mPerfVolText.setEnabled(false);
+                        mPerfVolDownButton.setEnabled(false);
+                        mPerfVolUpButton.setEnabled(false);
+
                         mPerfPlayText.setText("Stop");
                         mPerfPlayButton.setBackgroundResource(R.drawable.stopt);
                         tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}", UIHandler, getContext());
