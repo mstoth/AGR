@@ -199,7 +199,7 @@ public class RecListFragment extends Fragment implements TCPListener{
                 final boolean hasSel;
                 if (messageSubTypeString.equals("sequencer_song_number")) {
                     currentSelection = theMessage.getInt("value");
-                    hasSel = hasMidiFile(currentSelection);
+                    hasSel = hasMidiFile(currentSelection-1);
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

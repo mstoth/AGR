@@ -632,6 +632,13 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     mPlayButton.setBackgroundResource(R.drawable.playt);
                                     // hs.setText(R.string.play_status);
                                     playing = false;
+                                    mHymnVolDownButton.setEnabled(true);
+                                    mHymnVolUpButton.setEnabled(true);
+                                    mHymnVolText.setEnabled(true);
+                                    mHymnPitchDownButton.setEnabled(true);
+                                    mHymnPitchUpButton.setEnabled(true);
+                                    mPitchTextView.setEnabled(true);
+
                                     paused = false;
                                     mPlayButtonTextView.setText("Play");
                                     break;
@@ -642,6 +649,13 @@ public class HymnButtonFragment extends Fragment implements TCPListener {
                                     // hs.setText(R.string.stop_status);
                                     playing = true;
                                     paused = false;
+                                    mHymnVolDownButton.setEnabled(false);
+                                    mHymnVolUpButton.setEnabled(false);
+                                    mHymnVolText.setEnabled(false);
+                                    mHymnPitchDownButton.setEnabled(false);
+                                    mHymnPitchUpButton.setEnabled(false);
+                                    mPitchTextView.setEnabled(false);
+
                                     mPlayButtonTextView.setText("Stop");
                                     break;
                                 }

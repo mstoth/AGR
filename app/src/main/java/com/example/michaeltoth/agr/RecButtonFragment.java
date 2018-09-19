@@ -125,6 +125,9 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                     tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"delete\"}", UIHandler,getContext());
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                    recordButton.setEnabled(true);
+                    playButton.setEnabled(false);
+                    deleteButton.setEnabled(false);
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
                 }
@@ -230,7 +233,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                                     statusTextView.setText("Stopped");
                                     playButton.setText("Play");
                                     playButton.setEnabled(true);
-                                    recordButton.setEnabled(true);
+                                    //recordButton.setEnabled(true);
                                     deleteButton.setEnabled(true);
                                     stopButton.setEnabled(false);
                                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
