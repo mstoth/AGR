@@ -20,6 +20,7 @@ import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.michaeltoth.agr.widget.WheelView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +31,8 @@ import java.util.List;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 
-public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener {
+public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener,
+        RecButtonFragment.OnFragmentInteractionListener, RecListFragment.OnFragmentInteractionListener {
 
     private static final String tag = "MAIN_ACTIVITY";
     private TCPCommunicator tcpClient;
@@ -65,6 +67,17 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         }
     };
 
+    @Override
+    public void onFragmentInteraction(String name, HymnBook hymnBook, WheelView wv) {
+        RecButtonFragment secondFragment = (RecButtonFragment) getSupportFragmentManager().findFragmentById(R.id.button_container);
+        secondFragment.updateName(name, hymnBook, wv);
+    }
+
+    @Override
+    public void onFragmentInteraction() {
+        RecListFragment firstFragment = (RecListFragment) getSupportFragmentManager().findFragmentById(R.id.list_container);
+        firstFragment.updateName();
+    }
     private void ConnectToServer() {
         //tcpClient = TCPCommunicator.getInstance();
         tcpClient.init("192.168.1.4",10002);
@@ -157,11 +170,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         mRecButtonFragment = new RecButtonFragment();
 
         manager.beginTransaction().replace(R.id.button_container, mRecButtonFragment).commit();
-
         manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
-
-
-
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         int height=display.getHeight();

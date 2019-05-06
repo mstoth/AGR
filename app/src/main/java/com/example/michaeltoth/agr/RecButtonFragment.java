@@ -1,5 +1,6 @@
 package com.example.michaeltoth.agr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 
 import com.example.michaeltoth.agr.widget.WheelView;
 
@@ -39,6 +43,8 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
     private ArrayList<String> titles;
     WheelView hymnsWheelView;
     private IMainActivity mIMainActivity;
+    private String selectedName = "";
+    private MainActivity mListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +54,20 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mIMainActivity = (IMainActivity) getActivity();
+        Activity a;
+
+        if (context instanceof Activity){
+            a=(Activity) context;
+        } else {
+            return;
+        }
+        try {
+            mListener = (MainActivity) a;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(a.toString() + " must implement OnFragmentInteractionListener");
+        }
     }
+
 
     @Nullable
     @Override
@@ -65,14 +83,36 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
 
         statusTextView = (TextView) myView.findViewById(R.id.status_text_view);
         counterTextView = (TextView) myView.findViewById(R.id.counter_text_view);
+
+
+
         // ON CLICK METHODS
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int count = 0;
+                boolean found = false;
                 if (remoteActive) {
+                    String fileNames[] = hymnBook.getRecordingArray();
+                    String tFileName = "";
+                    for (int j=1; j<100; j++) {
+                        tFileName = "SONG" + String.format("%02d",j) + ".MID";
+                        found = false;
+                        for (String fn : fileNames) {
+                            if (fn.equals(tFileName)) {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            break;
+                        }
+                    }
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + tFileName + "\"}",
+                            UIHandler, getContext());
+                    hymnBook.addRecording(tFileName);
                     tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
@@ -99,6 +139,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                             playButton.setText("Pause");
                         }
                     }
+                    stopButton.setEnabled(true);
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
                 }
@@ -109,8 +150,9 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
             @Override
             public void onClick(View view) {
                 if (remoteActive) {
+                    recordButton.setEnabled(true);
                     tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
@@ -122,12 +164,35 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
             @Override
             public void onClick(View view) {
                 if (remoteActive) {
-                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"delete\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                    //int item = hymnsWheelView.getCurrentItem();
+                    String fname = selectedName; // .get(item);
+
+//                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_delete\",\"value\":\"" +
+//                            fname + "\"}", UIHandler, getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"delete\"}", UIHandler,getContext());
+                    deleteAlertView(selectedName);
+                    if (midiFiles != null) {
+                        midiFiles.remove(fname);
+                        //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
+                        //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+
+                    }
+
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+
+                    //hymnsWheelView.invalidateWheel(true);
+                    //hymnsWheelView.setCurrentItem(0);
+                    if (midiFiles != null) {
+                        if (midiFiles.size() > 0) {
+                            String tFileName = midiFiles.get(0);
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + tFileName + "\"}",
+                                    UIHandler, getContext());
+                        }
+                    }
+//                    hymnsWheelView.scrollTo(0,0);
                     recordButton.setEnabled(true);
-                    playButton.setEnabled(false);
-                    deleteButton.setEnabled(false);
+                    playButton.setEnabled(true);
+                    // deleteButton.setEnabled(false);
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
                 }
@@ -149,7 +214,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
 
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}",UIHandler,getContext());
+        //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}",UIHandler,getContext());
 
         return view;
     }
@@ -158,6 +223,24 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putAll(outState);
+    }
+
+    public void updateName(String name, HymnBook hBook, WheelView wv) {
+        selectedName = name;
+        hymnBook = hBook;
+        String[] mfiles = hymnBook.getRecordingArray();
+
+//        if (midiFiles != null) {
+//            midiFiles.clear();
+//            String[] mfiles = hymnBook.getRecordingArray();
+//            for (String s : mfiles) {
+//                midiFiles.add(s);
+//            }
+//        }
+        hymnsWheelView = wv;
+
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + selectedName + "\"}",UIHandler,getContext());
+
     }
 
     @Override
@@ -186,33 +269,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                     }
                 }
 
-//                if (messageSubTypeString.equals("media_dir_list")) {
-//                    int i;
-//                    mediaDirList.clear();
-//                    final ArrayList<String> mMidiFiles;
-//                    mMidiFiles = new ArrayList<String>();
-//                    mMidiFiles.clear();
-//                    midiFiles.clear();
-//                    for (i=0;i<obj.getJSONArray("value").length();i++) {
-//                        String s = obj.getJSONArray("value").getString(i);
-//                        mediaDirList.add(s);
-//                        if (s.contains(".MID")) {
-//                            mMidiFiles.add(s);
-//                            midiFiles.add(s);
-//                        }
-//                    }
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            WheelView wv = hymnsWheelView;
-//                            HymnAdapter4 adapter = new HymnAdapter4(RecorderActivity.this,hymnBook);
-//                            hymnsWheelView.setViewAdapter(adapter);
-//                            String[] r = hymnBook.getRecordingArray();
-//                            updateHymns(hymnsWheelView,hymnBook,0);
-//                            wv.invalidate();
-//                        }
-//                    });
-//                }
+
                 if (messageSubTypeString.equals("sequencer_measure")) {
                     final String msg = "Counter: " + obj.getInt("value");
                     getActivity().runOnUiThread(new Runnable() {
@@ -233,6 +290,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                                     statusTextView.setText("Stopped");
                                     playButton.setText("Play");
                                     playButton.setEnabled(true);
+                                    recordButton.setEnabled(true);
                                     //recordButton.setEnabled(true);
                                     deleteButton.setEnabled(true);
                                     stopButton.setEnabled(false);
@@ -256,7 +314,8 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                                     break;
                                 }
                                 case 3: {
-                                    statusTextView.setText("Paused");                                    playButton.setEnabled(false);
+                                    statusTextView.setText("Paused");
+                                    playButton.setEnabled(false);
                                     recordButton.setEnabled(false);
                                     deleteButton.setEnabled(false);
                                     stopButton.setEnabled(true);
@@ -335,16 +394,32 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
         if (recordButton==null) {
             return;
         }
-        if (selectionExists) {
-            recordButton.setEnabled(false);
-            stopButton.setEnabled(false);
-            deleteButton.setEnabled(true);
-            playButton.setEnabled(true);
-        } else {
-            recordButton.setEnabled(true);
-            stopButton.setEnabled(false);
-            playButton.setEnabled(false);
-            deleteButton.setEnabled(false);
-        }
+        recordButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        deleteButton.setEnabled(true);
+        playButton.setEnabled(true);
     }
+
+    private void deleteAlertView( final String name) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle( "Deleting " + name ).setMessage("Are you sure you want to delete " + name + "?")
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialoginterface, int i) { dialoginterface.cancel(); }})
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialoginterface, int i) {
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_delete\",\"value\":\"" +
+                                name + "\"}", UIHandler, getContext());
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                        if (mListener != null) {
+                            mListener.onFragmentInteraction();
+                        }
+                    }
+
+                }).show();
+    }
+
+    public interface OnFragmentInteractionListener {
+        public void onFragmentInteraction();
+    }
+
 }

@@ -45,11 +45,11 @@ public class HymnBook {
             perf.setTitle("Performance #" + i);
             mPerfs.add(perf);
             perfArrayList.add(" ");
-            Hymn rec = new Hymn();
-            rec.setTitle("Selection " + (i+1));
-            mRecs.add(rec);
-            recArrayList.add("Selection " + (i+1));
-            mRecordings.add("Selection " + String.format("%02d",i+1));
+//            Hymn rec = new Hymn();
+//            rec.setTitle("Selection " + (i+1));
+//            mRecs.add(rec);
+//            recArrayList.add("Selection " + (i+1));
+//            mRecordings.add("Selection " + String.format("%02d",i+1));
         }
     }
 
@@ -58,6 +58,13 @@ public class HymnBook {
             mHymns.clear();
             hymnArrayList = new ArrayList<String>();
             for (int i = 0; i < hymnArray.length(); i++) {
+                String s;
+                s = "";
+                try {
+                    s = (String) hymnArray.get(i);
+                } catch (JSONException e) {
+                    Log.e("ERROR","JSON ERROR",e);
+                }
                 try {
                     mHymns.add(new Hymn(hymnArray.getString(i)));
                     hymnArrayList.add(hymnArray.getString(i));
@@ -68,6 +75,7 @@ public class HymnBook {
         }
 
     }
+
     public void setPerfs(JSONArray hymnArray) {
         if (hymnArray != null) {
             mPerfs.clear();
@@ -83,6 +91,38 @@ public class HymnBook {
         }
 
     }
+
+    public void setRecordings(JSONArray recArray) {
+        if (recArray != null) {
+            mRecordings.clear();
+            mRecs.clear();
+            recArrayList = new ArrayList<String>();
+            for (int i = 0; i < recArray.length(); i++) {
+                String s;
+                s = "";
+                try {
+                    s = (String) recArray.get(i);
+                } catch (JSONException e) {
+                    Log.e("ERROR","JSON ERROR",e);
+                }
+                if (s.contains(".MID") || s.contains(".mid")) {
+                    try {
+                        mRecs.add(new Hymn(recArray.getString(i)));
+                        mRecordings.add(recArray.getString(i));
+                        recArrayList.add(recArray.getString(i));
+                    } catch(JSONException e) {
+                        Log.e("ERROR","JSON ERROR",e);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void addRecording(String hymnTitle) {
+        mRecordings.add(hymnTitle);
+    }
+
     public List<Hymn> getHymns() {
         return mHymns;
     }
