@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -32,7 +33,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 
 public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener,
-        RecButtonFragment.OnFragmentInteractionListener, RecListFragment.OnFragmentInteractionListener {
+        RecButtonFragment.OnFragmentInteractionListener, RecListFragment.OnFragmentInteractionListener,
+        DialogRenameFragment.OnFragmentInteractionListener {
 
     private static final String tag = "MAIN_ACTIVITY";
     private TCPCommunicator tcpClient;
@@ -66,6 +68,13 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
             return false;
         }
     };
+
+
+
+
+
+    public void onFragmentInteraction(Uri arg) {
+    }
 
     @Override
     public void onFragmentInteraction(String name, HymnBook hymnBook, WheelView wv) {

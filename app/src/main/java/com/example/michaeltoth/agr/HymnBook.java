@@ -107,11 +107,11 @@ public class HymnBook {
                 }
                 if (s.contains(".MID") || s.contains(".mid")) {
                     try {
-                        mRecs.add(new Hymn(recArray.getString(i)));
-                        mRecordings.add(recArray.getString(i));
-                        recArrayList.add(recArray.getString(i));
-                    } catch(JSONException e) {
-                        Log.e("ERROR","JSON ERROR",e);
+                        mRecs.add(new Hymn(s));
+                        mRecordings.add(s);
+                        recArrayList.add(s);
+                    } catch(Exception e) {
+                        Log.e("ERROR","ERROR",e);
                     }
                 }
             }

@@ -8,4 +8,8 @@
     <string name="title_hymn">Hymn Player</string>
     <string name="title_perf">Performance</string>
     <string name="title_rec">Recorder</string>
+    <string name="title_activity_rename">RenameActivity</string>
+    <string name="rename_song">Rename Song</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
