@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
     private MainActivity mListener;
     private boolean songNamesMatch;
     private String songNameToMatch;
+    private boolean recordWhenSongNamesMatch;
     static final int RENAME_DIALOG_ID = 0;
 
     @Override
@@ -143,15 +145,17 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                     songNameToMatch = tFileName;
                     songNamesMatch = false;
                     boolean songNameSent = false;
-
+                    recordWhenSongNamesMatch = true;
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + tFileName + "\"}",
                             UIHandler, getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\"}",
+                            UIHandler, getContext());
 
-                    while (!songNamesMatch) {
-                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\"}",
-                                    UIHandler, getContext());
-                    }
-                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
+//                    while (!songNamesMatch) {
+//                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\"}",
+//                                    UIHandler, getContext());
+//                    }
+//                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
                     //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
                     //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
@@ -178,9 +182,18 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
 //                    myIntent.putExtra("name", selectedName); //Optional parameters
 //                    getContext().startActivity(myIntent);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                    View v = layout.findViewById(R.id.rename_content);
+//                    EditText et = v.findViewById(R.id.editText);
+//                    et.setText(selectedName);
+//                    TextView tv = v.findViewById(R.id.textView);
+//                    tv.setText("selectedName");
                     builder.setView(layout);
 
-                    builder.setTitle("Rename Song");
+                    String selectedNameWithoutSuffix;
+                    selectedNameWithoutSuffix = selectedName.substring(0, selectedName.lastIndexOf('.'));
+
+                    builder.setTitle("Old Name = " + selectedNameWithoutSuffix);
+
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -201,7 +214,7 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
 //                    FragmentManager fm = getActivity().getSupportFragmentManager();
 //                    DialogRenameFragment editNameDialogFragment = DialogRenameFragment.newInstance("Rename Song");
 //                    editNameDialogFragment.show(fm, "fragment_edit_name");
-                    showEditDialog();
+                    showEditDialog(layout);
                 }
             }
         });
@@ -238,8 +251,8 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                 if (remoteActive) {
                     recordButton.setEnabled(true);
                     tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"stop\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
+                    //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
                 } else {
                     Toast.makeText(getActivity(),"Remote is not active",Toast.LENGTH_SHORT).show();
                 }
@@ -375,6 +388,12 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
                         songNamesMatch = true;
                     } else {
                         songNamesMatch = false;
+                    }
+                    if (recordWhenSongNamesMatch) {
+                        if (songNamesMatch) {
+                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
+                            recordWhenSongNamesMatch = false;
+                        }
                     }
                 }
 
@@ -535,9 +554,15 @@ public class RecButtonFragment extends Fragment implements TCPListener, IRecButt
     }
 
 
-    private void showEditDialog() {
+    private void showEditDialog(View layout) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance("Rename Song");
+        String selectedNameWithoutSuffix;
+        selectedNameWithoutSuffix = selectedName.substring(0, selectedName.lastIndexOf('.'));
+
+        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance("Rename " + selectedNameWithoutSuffix, selectedNameWithoutSuffix);
+        //View v = editNameDialogFragment.getView();
+        EditText et = layout.findViewById(R.id.editText);
+        et.setText(selectedNameWithoutSuffix);
         editNameDialogFragment.setTargetFragment(this,0);
         editNameDialogFragment.show(fm, "fragment_edit_name");
     }

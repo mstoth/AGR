@@ -33,10 +33,11 @@ public class EditNameDialogFragment extends DialogFragment implements TextView.O
         // Use `newInstance` instead as shown below
     }
 
-    public static EditNameDialogFragment newInstance(String title) {
+    public static EditNameDialogFragment newInstance(String title, String name) {
         EditNameDialogFragment frag = new EditNameDialogFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
+        args.putString("name",name);
         frag.setArguments(args);
         return frag;
     }
@@ -54,7 +55,9 @@ public class EditNameDialogFragment extends DialogFragment implements TextView.O
         mEditText = (EditText) view.findViewById(R.id.txt_your_name);
         // Fetch arguments from bundle and set title
         String title = getArguments().getString("title", "Enter Name");
+        String name = getArguments().getString("name","No Name");
         getDialog().setTitle(title);
+        mEditText.setText(name);
         // Show soft keyboard automatically and request focus to field
         mEditText.requestFocus();
         getDialog().getWindow().setSoftInputMode(
