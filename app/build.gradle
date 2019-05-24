@@ -5,8 +5,8 @@ android {
     defaultConfig {
         applicationId "com.allenorgan.michaeltoth.agr"
         minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 21
+        targetSdkVersion 29
+        versionCode 24
         versionName "1.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -16,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
     }
 }
 
@@ -31,4 +35,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.android.support:recyclerview-v7:28.0.0-alpha3'
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
 }

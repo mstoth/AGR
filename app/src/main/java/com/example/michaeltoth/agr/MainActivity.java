@@ -76,6 +76,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     public void onFragmentInteraction(Uri arg) {
     }
 
+
     @Override
     public void onFragmentInteraction(String name, HymnBook hymnBook, WheelView wv) {
         RecButtonFragment secondFragment = (RecButtonFragment) getSupportFragmentManager().findFragmentById(R.id.button_container);
@@ -83,9 +84,10 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     }
 
     @Override
-    public void onFragmentInteraction() {
+    public void onFragmentInteraction(String name) {
+        // deletes file
         RecListFragment firstFragment = (RecListFragment) getSupportFragmentManager().findFragmentById(R.id.list_container);
-        firstFragment.updateName();
+        firstFragment.removeName(name);
     }
     private void ConnectToServer() {
         //tcpClient = TCPCommunicator.getInstance();

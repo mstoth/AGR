@@ -31,9 +31,9 @@ public class RenameActivity extends AppCompatActivity {
 //        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name"); //if it's a string you stored.
+        String name = intent.getStringExtra("NAME_TO_CHANGE"); //if it's a string you stored.
 
-        editName = (EditText) findViewById(R.id.editText);
+        editName = (EditText) findViewById(R.id.edit_text);
         editName.setText(name);
     }
 

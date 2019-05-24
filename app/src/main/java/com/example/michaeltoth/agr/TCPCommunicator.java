@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 // import android.util.Log;
+import android.util.Log;
 import android.widget.Toast;
 
 public class TCPCommunicator {
@@ -137,7 +138,7 @@ public class TCPCommunicator {
                     String outMsg = obj.get(EnumsAndStatics.MESSAGE_CONTENT_FOR_JSON).toString();
                     out.write(outMsg + "\n");
                     out.flush();
-                    // Log.i("TcpClient", "sent: " + outMsg);
+                    Log.i("TcpClient", "sent: " + outMsg);
                 }
                 catch(Exception e)
                 {
@@ -256,7 +257,7 @@ public class TCPCommunicator {
                                     JSONObject j = new JSONObject(partial);
                                     for (TCPListener listener : allListeners)
                                         listener.onTCPMessageRecieved(j);
-                                    // Log.i("TcpClient", "received: " + partial);
+                                    Log.i("TcpClient", "received: " + partial);
                                     partial = "";
                                 } catch (JSONException e) {
                                     e.printStackTrace();

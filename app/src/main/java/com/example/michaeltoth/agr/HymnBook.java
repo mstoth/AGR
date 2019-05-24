@@ -121,6 +121,7 @@ public class HymnBook {
 
     public void addRecording(String hymnTitle) {
         mRecordings.add(hymnTitle);
+        recArrayList.add(hymnTitle);
     }
 
     public List<Hymn> getHymns() {
@@ -131,6 +132,10 @@ public class HymnBook {
     }
     public List<Hymn> getRecs() {
         return mRecs;
+    }
+
+    public ArrayList<String> getRecArrayList() {
+        return recArrayList;
     }
 
     public String[] getHymnArray() {
@@ -161,7 +166,7 @@ public class HymnBook {
     }
 
     public String[] getRecordingArray() {
-        String[] hArray = new String[mRecordings.size()];
+         String[] hArray = new String[mRecordings.size()];
         int i;
         for (i=0;i<mRecordings.size();i++) {
             hArray[i]=mRecordings.get(i);
