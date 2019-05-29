@@ -150,6 +150,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                         for (String fn : fileNames) {
                             if (fn.equals(tFileName)) {
                                 found = true;
+                                break;
                             }
                         }
                         if (!found) {
@@ -186,7 +187,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
             public void onClick(View view) {
                 if (remoteActive) {
                     int index = hymnsWheelView.getCurrentItem();
-                    if (index >= hymnBook.getRecArray().length) {
+                    if (index >= hymnBook.getRecordingArray().length) {
                         Toast.makeText(getContext(), "No Recordings.", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -261,7 +262,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
             @Override
             public void onClick(View view) {
                 if (remoteActive) {
-                    model.setNewName(null);
+                    // model.setNewName(null);
                     if (playButton.getText().equals("Pause")) {
                         playButton.setText("Continue");
                         playButton.setEnabled(true);
@@ -306,17 +307,18 @@ public class RecButtonFragment extends Fragment implements TCPListener,
             public void onClick(View view) {
                 if (remoteActive) {
                     int item = hymnsWheelView.getCurrentItem();
-                    if (item >= hymnBook.getRecArray().length)  {
-                        Toast.makeText(getContext(),"No Recordings.",Toast.LENGTH_LONG).show();
-                        return;
-                    }
+//                    if (item >= hymnBook.getRecArray().length)  {
+//                        Toast.makeText(getContext(),"No Recordings.",Toast.LENGTH_LONG).show();
+//                        return;
+//                    }
+
                     selectedName = hymnBook.getRecordingArray()[item];
                     String fname = selectedName; // .get(item);
-
+//                    hymnBook.removeRecording(fname);
 //                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_delete\",\"value\":\"" +
 //                            fname + "\"}", UIHandler, getContext());
                     //tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"delete\"}", UIHandler,getContext());
-                    if (hymnBook.getRecArray().length>0) {
+//                    if (hymnBook.getRecArray().length>0) {
                         deleteAlertView(selectedName);
 //                        if (midiFiles != null) {
 //                            midiFiles.remove(selectedName);
@@ -326,7 +328,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                         //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
                         //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
-                    }
+//                    }
 
                     //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
@@ -427,6 +429,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
 
                 if (messageSubTypeString.equals("sequencer_song_name")) {
                     String name;
+
                     name = obj.getString("value");
                     if (name.equals(songNameToMatch)) {
                         songNamesMatch = true;
@@ -437,9 +440,19 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                         if (songNamesMatch) {
                             tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
                             recordWhenSongNamesMatch = false;
+                            mListener.runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+
+                                    statusTextView.setText(R.string.recording);
+
+                                }
+                            });
+
                         }
                     }
-                    //model.setSelectedName(name);
+                    model.setNewName(name);
                 }
 
                 if (messageSubTypeString.equals("sequencer_measure")) {
@@ -473,7 +486,11 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                                     break;
                                 }
                                 case 1: {
-                                    statusTextView.setText("Playing");
+                                    if (songNamesMatch) {
+                                        statusTextView.setText("Recording");
+                                    } else {
+                                        statusTextView.setText("Playing");
+                                    }
                                     playButton.setEnabled(true);
                                     playButton.setText("Pause");
                                     recordButton.setEnabled(false);
@@ -599,6 +616,8 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                         if (midiFiles != null) {
                             midiFiles.remove(selectedName);
                         }
+                        hymnBook.removeRecording(selectedName);
+
                         if (mListener != null) {
                             mListener.onFragmentInteraction(name);
                         }
@@ -618,6 +637,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                         recordButton.setEnabled(true);
                         playButton.setEnabled(true);
 
+                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
                     }
 

@@ -31,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class RecListFragment extends Fragment implements TCPListener{
@@ -66,6 +68,7 @@ public class RecListFragment extends Fragment implements TCPListener{
             int index = midiFiles.indexOf(oldName);
             if (index >= 0) {
                 midiFiles.remove(index);
+                hymnBook.removeRecording(oldName);
             }
         });
         model.getNewName().observe(this,(name)->{
@@ -79,6 +82,11 @@ public class RecListFragment extends Fragment implements TCPListener{
                             UIHandler,getContext());
                     currentSelection = s;
 
+                } else {
+                    index = 0;
+                    hymnsWheelView.setCurrentItem(index);
+                    String s = midiFiles.get(index);
+                    currentSelection = s;
                 }
                 return;
             }
@@ -97,13 +105,18 @@ public class RecListFragment extends Fragment implements TCPListener{
             } else {
                 if (newName != null) {
                     midiFiles.add(newName);
+                    Collections.sort(midiFiles);
                     hymnBook.addRecording(newName);
                     index = midiFiles.indexOf(newName);
                     hymnsWheelView.setCurrentItem(index);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_rename\",\"value\":\"" +
+                                    oldName + "\",\"value2\":\"" + newName + "\"}",
+                            UIHandler, getContext());
+
                 }
 
             }
-            //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
 
         });
 
@@ -285,6 +298,8 @@ public class RecListFragment extends Fragment implements TCPListener{
             return mHymns.size();
         }
     }
+
+
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
@@ -334,6 +349,7 @@ public class RecListFragment extends Fragment implements TCPListener{
                             midiFiles.add(s);
                         }
                     }
+                    Collections.sort(midiFiles);
 //                    final ArrayList<String> mMidiFiles;
 //                    mMidiFiles = new ArrayList<String>();
 //                    mMidiFiles.clear();
@@ -350,7 +366,7 @@ public class RecListFragment extends Fragment implements TCPListener{
                             WheelView wv = hymnsWheelView;
                             HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
                             hymnsWheelView.setViewAdapter(adapter);
-                            String[] r = hymnBook.getRecordingArray();
+                            //String[] r = hymnBook.getRecordingArray();
                             if (newName != null && newName.length()>0) {
                                 int index = midiFiles.indexOf(newName);
                                 if (index >= 0) {
@@ -428,6 +444,7 @@ public class RecListFragment extends Fragment implements TCPListener{
         public void setMidiFiles(String[] mf) {
             for (String f: mf) {
                 midiFiles.add(f);
+                Collections.sort(midiFiles);
             }
         }
 
@@ -493,9 +510,11 @@ public class RecListFragment extends Fragment implements TCPListener{
                     int idx = midiFiles.indexOf(name);
                     if (idx >= 0) {
                         midiFiles.remove(idx);
+                        hymnBook.removeRecording(name);
                         hymnsWheelView.invalidateWheel(true);
                     }
                 }
+                Collections.sort(midiFiles);
 //                selectedName = midiFiles.get(0);
 //                hymnsWheelView.setCurrentItem(0);
             } else {

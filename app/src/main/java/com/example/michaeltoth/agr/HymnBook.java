@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class HymnBook {
@@ -115,6 +117,8 @@ public class HymnBook {
                     }
                 }
             }
+            Collections.sort(mRecordings);
+
         }
 
     }
@@ -122,6 +126,26 @@ public class HymnBook {
     public void addRecording(String hymnTitle) {
         mRecordings.add(hymnTitle);
         recArrayList.add(hymnTitle);
+        Collections.sort(mRecordings);
+    }
+
+    public void removeRecording(String hymnTitle) {
+        int idx;
+        idx = mRecordings.indexOf(hymnTitle);
+        if (idx>=0) {
+            mRecordings.remove(idx);
+        }
+
+        idx = recArrayList.indexOf(hymnTitle);
+        if (idx >=0) {
+            recArrayList.remove(idx);
+        }
+
+        idx = mRecs.indexOf(hymnTitle);
+        if (idx >= 0) {
+            mRecs.remove(hymnTitle);
+        }
+
     }
 
     public List<Hymn> getHymns() {
