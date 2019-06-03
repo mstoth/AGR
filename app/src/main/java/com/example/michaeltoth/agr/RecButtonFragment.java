@@ -480,6 +480,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                                     //recordButton.setEnabled(true);
                                     deleteButton.setEnabled(true);
                                     stopButton.setEnabled(false);
+                                    hymnsWheelView.setEnabled(true);
                                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
 
                                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
@@ -487,7 +488,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                                 }
                                 case 1: {
                                     if (songNamesMatch) {
-                                        statusTextView.setText("Recording");
+                                        statusTextView.setText("Recording " + songNameToMatch);
                                     } else {
                                         statusTextView.setText("Playing");
                                     }
@@ -496,6 +497,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                                     recordButton.setEnabled(false);
                                     deleteButton.setEnabled(false);
                                     stopButton.setEnabled(true);
+                                    hymnsWheelView.setEnabled(false);
 
                                     break;
                                 }
@@ -510,6 +512,7 @@ public class RecButtonFragment extends Fragment implements TCPListener,
                                     deleteButton.setEnabled(false);
                                     stopButton.setEnabled(true);
                                     playButton.setEnabled(true);
+                                    hymnsWheelView.setEnabled(false);
 
                                     break;
                                 }
