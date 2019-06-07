@@ -8,6 +8,7 @@
     <string name="title_hymn">Hymn Player</string>
     <string name="title_perf">Performance</string>
     <string name="title_rec">Recorder</string>
+    <string name="title_player">Player</string>
     <string name="title_activity_rename">RenameActivity</string>
     <string name="rename_song">Rename Song</string>
     <string name="recording">Recording</string>
