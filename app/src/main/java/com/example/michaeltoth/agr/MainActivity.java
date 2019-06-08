@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.michaeltoth.agr.widget.WheelView;
+import android.util.DisplayMetrics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +46,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     private HymnBook hymnBook;
     private List<Fragment> fragmentList;
     private RecButtonFragment mRecButtonFragment;
+    private PlayerButtonFragment mPlayerButtonFragment;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -62,6 +64,9 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
                     return true;
                 case R.id.navigation_recording:
                     switchToRecFragment();
+                    return true;
+                case R.id.navigation_player:
+                    switchToPlayerFragment();
                     return true;
 
             }
@@ -188,11 +193,31 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         View view = findViewById(R.id.list_container);
         ViewGroup.LayoutParams p = view.getLayoutParams();
         int h = p.height;
-        p.height  = (int)(height/4);
+        p.height  = (int)(height/3.3);
         view.setLayoutParams(p);
     }
 
+    public void switchToPlayerFragment() {
+        final String tag = "PLAYER_FRAGMENT";
+        tcpClient.removeAllListeners();
+        FragmentManager manager = getSupportFragmentManager();
+        mPlayerButtonFragment = new PlayerButtonFragment();
 
+        manager.beginTransaction().replace(R.id.button_container, mPlayerButtonFragment).commit();
+        manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        //int height = display.getHeight();
+        DisplayMetrics metrics = getBaseContext().getResources().getDisplayMetrics();
+        // int screenWidth = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        View view = findViewById(R.id.list_container);
+        ViewGroup.LayoutParams p = view.getLayoutParams();
+        int h = p.height;
+        p.height = (int)(height/4);
+        view.setLayoutParams(p);
+    }
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
