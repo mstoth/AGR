@@ -80,7 +80,7 @@ public class SongFragment extends Fragment {
 //        View view = getContext().findViewById(R.id.list_container);
         ViewGroup.LayoutParams p = view.getLayoutParams();
         int h = p.height;
-        p.height = (int)(2*height/3);
+        p.height = (int)(height/2);
         view.setLayoutParams(p);
 
         return view;
