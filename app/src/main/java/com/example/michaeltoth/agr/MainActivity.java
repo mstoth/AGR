@@ -21,6 +21,8 @@ import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.michaeltoth.agr.dummy.PlaylistContent;
 import com.example.michaeltoth.agr.widget.WheelView;
 import android.util.DisplayMetrics;
 
@@ -35,7 +37,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener,
         RecButtonFragment.OnFragmentInteractionListener, RecListFragment.OnFragmentInteractionListener,
-        DialogRenameFragment.OnFragmentInteractionListener {
+        DialogRenameFragment.OnFragmentInteractionListener, SongFragment.OnListFragmentInteractionListener {
 
     private static final String tag = "MAIN_ACTIVITY";
     private TCPCommunicator tcpClient;
@@ -46,7 +48,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     private HymnBook hymnBook;
     private List<Fragment> fragmentList;
     private RecButtonFragment mRecButtonFragment;
-    private PlayerButtonFragment mPlayerButtonFragment;
+    private SongFragment mPlayerButtonFragment;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -77,9 +79,13 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
 
 
 
+    public void onListFragmentInteraction(PlaylistContent.SongItem song) {
+        Log.d("DEBUG",song.name);
+    }
 
     public void onFragmentInteraction(Uri arg) {
     }
+
 
 
     @Override
@@ -201,7 +207,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         final String tag = "PLAYER_FRAGMENT";
         tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
-        mPlayerButtonFragment = new PlayerButtonFragment();
+        mPlayerButtonFragment = new SongFragment();
 
         manager.beginTransaction().replace(R.id.button_container, mPlayerButtonFragment).commit();
         manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
@@ -215,7 +221,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         View view = findViewById(R.id.list_container);
         ViewGroup.LayoutParams p = view.getLayoutParams();
         int h = p.height;
-        p.height = (int)(height/4);
+        p.height = (int)(height/3);
         view.setLayoutParams(p);
     }
     @Override
