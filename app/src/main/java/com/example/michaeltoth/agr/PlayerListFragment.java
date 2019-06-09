@@ -1,11 +1,281 @@
 package com.example.michaeltoth.agr;
 
+import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.example.michaeltoth.agr.widget.OnWheelChangedListener;
+import com.example.michaeltoth.agr.widget.OnWheelScrollListener;
+import com.example.michaeltoth.agr.widget.WheelView;
+import com.example.michaeltoth.agr.widget.adapters.AbstractWheelTextAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class PlayerListFragment extends Fragment implements TCPListener {
+    private PlayerListFragment.HymnAdapter4 mAdapter;
+    private TCPCommunicator tcpClient;
+    private Handler UIHandler = new Handler();
+    private HymnBook hymnBook;
+    private boolean scrolling;
+    WheelView hymnsWheelView;
+    private ArrayList<String> midiFiles;
+    private ArrayList<String> mediaDirList;
+    private boolean remoteActive;
+    private String currentSelection;
+    private static final String tag = "REC_LIST";
+    private IMainActivity iMainActivity;
+    private MainActivity mListener;
+    private SharedViewModel model;
+    private String oldName, newName;
+
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
+
+        model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        model.getOldName().observe(this,(name)->{
+            oldName = name;
+            int index = midiFiles.indexOf(oldName);
+            if (index >= 0) {
+                midiFiles.remove(index);
+                hymnBook.removeRecording(oldName);
+            }
+        });
+        model.getNewName().observe(this,(name)->{
+
+            newName = name;
+            if (newName == null) {
+                int index = hymnsWheelView.getCurrentItem();
+                if (index >= 0 && index < midiFiles.size()) {
+                    String s = midiFiles.get(index);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + s + "\"}" ,
+                            UIHandler,getContext());
+                    currentSelection = s;
+
+                } else {
+                    index = 0;
+                    hymnsWheelView.setCurrentItem(index);
+                    String s = midiFiles.get(index);
+                    currentSelection = s;
+                }
+                return;
+            }
+            currentSelection = newName;
+            if (midiFiles == null) {
+                midiFiles = hymnBook.getRecArrayList();
+                if (midiFiles == null) {
+                    return;
+                }
+            }
+            int index = midiFiles.indexOf(newName);
+            if (index >= 0) {
+                hymnsWheelView.setCurrentItem(index);
+            } else {
+                if (newName != null) {
+                    midiFiles.add(newName);
+                    Collections.sort(midiFiles);
+                    hymnBook.addRecording(newName);
+                    index = midiFiles.indexOf(newName);
+                    hymnsWheelView.setCurrentItem(index);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_rename\",\"value\":\"" +
+                                    oldName + "\",\"value2\":\"" + newName + "\"}",
+                            UIHandler, getContext());
+
+                }
+
+            }
+            //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_dir\"}", UIHandler,getContext());
+
+        });
+
+
+        scrolling = false;
+        remoteActive = false;
+        hymnsWheelView = view.findViewById(R.id.hymn_recycler_view);
+        hymnsWheelView.setVisibleItems(1);
+        mAdapter = new PlayerListFragment.HymnAdapter4(getContext(),hymnBook);
+        hymnsWheelView.setViewAdapter(mAdapter);
+
+        hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
+            public void onChanged(WheelView wheel, int oldValue, int newValue) {
+                if (!scrolling) {
+                    if ( currentSelection != null) {
+                        if (currentSelection.length() > 0) {
+                            int index = midiFiles.indexOf(currentSelection);
+                            hymnsWheelView.setCurrentItem(index);
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + currentSelection + "\"}" ,
+                                    UIHandler,getContext());
+
+                        }
+                    }
+
+                }
+            }
+        });
+
+        hymnsWheelView.addScrollingListener( new OnWheelScrollListener() {
+            public void onScrollingStarted(WheelView wheel) {
+                scrolling = true;
+            }
+            public void onScrollingFinished(WheelView wheel) {
+                scrolling = false;
+                int item = hymnsWheelView.getCurrentItem();
+                if (midiFiles.size()>item) {
+                    String fname = midiFiles.get(item);
+                    currentSelection = fname;
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + fname + "\"}" ,
+                            UIHandler,getContext());
+                }
+
+
+            }
+        });
+
+        mediaDirList = new ArrayList<String>();
+        midiFiles = new ArrayList<String>();
+        hymnBook = HymnBook.get(getContext());
+        remoteActive = false;
+
+
+        tcpClient = TCPCommunicator.getInstance();
+        if (!tcpClient.isConnected) {
+            tcpClient.setServerHost("192.168.1.4");
+            tcpClient.setServerPort(10002);
+            ConnectToServer();
+        } else {
+            tcpClient.addListener(this);
+        }
+
+
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
+
+        hymnBook = HymnBook.get(getContext());
+        updateUI();
+
+//        if (hasMidiFile(hymnsWheelView.getCurrentItem())) {
+//            mListener.selectedTitleExists(true);
+//        } else {
+//            mListener.selectedTitleExists(false);
+//        }
+        int item = hymnsWheelView.getCurrentItem();
+        String fname = "";
+        if (midiFiles.size() == 0) {
+            //fname = hymnBook.getRecordingArray()[0];
+        } else {
+            fname = midiFiles.get(item);
+        }
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(fname,hymnBook, hymnsWheelView);
+//        }
+
+        return view;
+    }
+    private void ConnectToServer() {
+        //tcpClient = TCPCommunicator.getInstance();
+        tcpClient.init("192.168.1.4",10002);
+        TCPCommunicator.addListener(this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity a;
+
+        if (context instanceof Activity){
+            a=(Activity) context;
+        } else {
+            return;
+        }
+        try {
+            mListener = (MainActivity) a;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(a.toString() + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    private class RecHolder extends RecyclerView.ViewHolder {
+        private TextView mTitleView;
+        private Hymn mHymn;
+
+        public RecHolder(LayoutInflater inflater,ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_rec,parent,false));
+            mTitleView = itemView.findViewById(R.id.rec_title);
+        }
+
+        public void bind(Hymn hymn) {
+            mHymn = hymn;
+            mTitleView.setText(hymn.getTitle());
+        }
+    }
+
+    private void updateUI() {
+        // perhaps not needed
+    }
+
+    private class RecAdapter extends RecyclerView.Adapter<PlayerListFragment.RecHolder> {
+        private List<Hymn> mHymns;
+
+        public RecAdapter(List<Hymn> hymns) {
+            mHymns = hymns;
+        }
+
+        @NonNull
+        @Override
+        public PlayerListFragment.RecHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            return new PlayerListFragment.RecHolder(layoutInflater,viewGroup);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PlayerListFragment.RecHolder hymnHolder, int i) {
+            Hymn hymn = mHymns.get(i);
+            hymnHolder.bind(hymn);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mHymns.size();
+        }
+    }
+
+
+    private boolean hasMidiFile(int index) {
+//        String title = hymnBook.getHymnArray()[index];
+//        if (midiFiles==null) {
+//            return false;
+//        }
+//        for (String name: midiFiles) {
+//            if (name.equals(title)) {
+//                return true;
+//            }
+//        }
+        return true;
+    }
 
 
     @Override
@@ -34,4 +304,71 @@ public class PlayerListFragment extends Fragment implements TCPListener {
         // Nothing to do
     }
 
+    private class HymnAdapter4 extends AbstractWheelTextAdapter {
+        private HymnBook hymnBook = HymnBook.get(getContext());
+        private String[] hymns = hymnBook.getRecArray();
+        // private String midiFiles[] = new String[] {};
+
+        public void setMidiFiles(String[] mf) {
+            for (String f: mf) {
+                midiFiles.add(f);
+                Collections.sort(midiFiles);
+            }
+        }
+
+        /**
+         * Constructor
+         */
+        protected HymnAdapter4(Context context, HymnBook hymnbook) {
+            super(context, R.layout.list_item_hymn, NO_RESOURCE);
+            setItemTextResource(R.id.hymn_title);
+        }
+
+        @Override
+        public View getItem(int index, View cachedView, ViewGroup parent) {
+            View view = super.getItem(index, cachedView, parent);
+            TextView txt = (TextView) view.findViewById(R.id.hymn_title);
+            if (index < midiFiles.size()) {
+                String fname = midiFiles.get(index);
+                if (fname.contains(".mid")) {
+                    fname = fname.replace(".mid","");
+                }
+                if (fname.contains(".MID")) {
+                    fname = fname.replace(".MID","");
+                }
+                txt.setText(fname);
+                txt.setTextColor(Color.BLACK);
+            }
+            return view;
+        }
+
+        @Override
+        public int getItemsCount() {
+//            int sz = midiFiles.size();
+//            int fnameIndex = hymnsWheelView.getCurrentItem();
+//            String fname;
+//            if (midiFiles.size()>fnameIndex) {
+//                fname = midiFiles.get(fnameIndex);
+//            } else {
+//                fname = "";
+//            }
+//            if (mListener != null) {
+//                mListener.onFragmentInteraction(fname, hymnBook, hymnsWheelView);
+//            }
+            return midiFiles.size();
+        }
+
+        @Override
+        protected CharSequence getItemText(int index) {
+            if (midiFiles.size()==0) {
+                return "";
+            }
+            if (midiFiles.size() > index) {
+                return midiFiles.get(index);
+            }
+            return "";
+        }
+    }
+
 }
+

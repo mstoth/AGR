@@ -98,8 +98,6 @@ public class RecListFragment extends Fragment implements TCPListener{
                 }
             }
             int index = midiFiles.indexOf(newName);
-//            midiFiles.remove(index);
-//            midiFiles.add(index,newName);
             if (index >= 0) {
                 hymnsWheelView.setCurrentItem(index);
             } else {
@@ -131,8 +129,6 @@ public class RecListFragment extends Fragment implements TCPListener{
         hymnsWheelView.addChangingListener(new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
                 if (!scrolling) {
-//                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\",\"value\":" + Integer.toString(hymnsWheelView.getCurrentItem()+1) + "}",
-//                            UIHandler,getContext());
                     if ( currentSelection != null) {
                         if (currentSelection.length() > 0) {
                             int index = midiFiles.indexOf(currentSelection);
@@ -153,21 +149,12 @@ public class RecListFragment extends Fragment implements TCPListener{
             }
             public void onScrollingFinished(WheelView wheel) {
                 scrolling = false;
-//                if (hasMidiFile(hymnsWheelView.getCurrentItem())) {
-//                    mListener.selectedTitleExists(true);
-//                } else {
-//                    mListener.selectedTitleExists(false);
-//                }
-                // Log.i("TAG",Integer.toString(hymnsWheelView.getCurrentItem()));
                 int item = hymnsWheelView.getCurrentItem();
                 if (midiFiles.size()>item) {
                     String fname = midiFiles.get(item);
                     currentSelection = fname;
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + fname + "\"}" ,
                             UIHandler,getContext());
-//                    if (mListener != null) {
-//                        mListener.onFragmentInteraction(fname, hymnBook, hymnsWheelView);
-//                    }
                 }
 
 
@@ -194,7 +181,6 @@ public class RecListFragment extends Fragment implements TCPListener{
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
-        // tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}", UIHandler,getContext());
 
         hymnBook = HymnBook.get(getContext());
         updateUI();
@@ -214,14 +200,6 @@ public class RecListFragment extends Fragment implements TCPListener{
         if (mListener != null) {
             mListener.onFragmentInteraction(fname,hymnBook, hymnsWheelView);
         }
-
-//        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/3);
-//        view.setLayoutParams(p);
 
         return view;
     }
@@ -436,7 +414,7 @@ public class RecListFragment extends Fragment implements TCPListener{
     }
 
 
-    private class HymnAdapter4 extends AbstractWheelTextAdapter {
+    protected class HymnAdapter4 extends AbstractWheelTextAdapter {
         private HymnBook hymnBook = HymnBook.get(getContext());
         private String[] hymns = hymnBook.getRecArray();
         // private String midiFiles[] = new String[] {};
