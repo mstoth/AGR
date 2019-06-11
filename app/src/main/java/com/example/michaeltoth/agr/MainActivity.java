@@ -21,7 +21,10 @@ import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.michaeltoth.agr.dummy.PlaylistContent;
 import com.example.michaeltoth.agr.widget.WheelView;
+import android.util.DisplayMetrics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +37,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class MainActivity extends DoubleFragmentActivity implements IMainActivity ,TCPListener,
         RecButtonFragment.OnFragmentInteractionListener, RecListFragment.OnFragmentInteractionListener,
-        DialogRenameFragment.OnFragmentInteractionListener {
+        DialogRenameFragment.OnFragmentInteractionListener, SongFragment.OnListFragmentInteractionListener {
 
     private static final String tag = "MAIN_ACTIVITY";
     private TCPCommunicator tcpClient;
@@ -76,9 +79,13 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
 
 
 
+    public void onListFragmentInteraction(PlaylistContent.SongItem song) {
+        Log.d("DEBUG",song.name);
+    }
 
     public void onFragmentInteraction(Uri arg) {
     }
+
 
 
     @Override
@@ -198,7 +205,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         View view = findViewById(R.id.list_container);
         ViewGroup.LayoutParams p = view.getLayoutParams();
         int h = p.height;
-        p.height  = (int)(height/4);
+        p.height  = (int)(height/3.3);
         view.setLayoutParams(p);
     }
 
@@ -221,6 +228,12 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     }
 
 
+        View view = findViewById(R.id.list_container);
+        ViewGroup.LayoutParams p = view.getLayoutParams();
+        int h = p.height;
+        p.height = (int)(height/3);
+        view.setLayoutParams(p);
+    }
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
