@@ -344,7 +344,7 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 
                     for (i=0; i<alen; i++) {
                         String s = a.getString(i);
-                        if (s.contains(".mid") || s.contains(".MID")) {
+                        if (s.contains(".zip") || s.contains(".ZIP")) {
                             mediaDirList.add(s);
                             midiFiles.add(s);
                         }
@@ -462,11 +462,11 @@ public class PlayerListFragment extends Fragment implements TCPListener{
             TextView txt = (TextView) view.findViewById(R.id.hymn_title);
             if (index < midiFiles.size()) {
                 String fname = midiFiles.get(index);
-                if (fname.contains(".mid")) {
-                    fname = fname.replace(".mid","");
+                if (fname.contains(".zip")) {
+                    fname = fname.replace(".zip","");
                 }
-                if (fname.contains(".MID")) {
-                    fname = fname.replace(".MID","");
+                if (fname.contains(".ZIP")) {
+                    fname = fname.replace(".ZIP","");
                 }
                 txt.setText(fname);
                 txt.setTextColor(Color.BLACK);
