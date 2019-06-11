@@ -137,7 +137,7 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         // ON CLICK METHODS
         stopButton = view.findViewById(R.id.playerStopButton);
         playButton = view.findViewById(R.id.playerStartButton);
-
+        statusTextView = view.findViewById(R.id.status_text_view);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -294,13 +294,13 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                 }
 
                 if (messageSubTypeString.equals("sequencer_measure")) {
-                    final String msg = "Counter: " + obj.getInt("value");
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            counterTextView.setText(msg);
-//                        }
-//                    });
+                    final String msg = "Measure: " + obj.getInt("value");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            statusTextView.setText(msg);
+                        }
+                    });
                 }
 
                 if (messageSubTypeString.equals("seqeng_status")) {

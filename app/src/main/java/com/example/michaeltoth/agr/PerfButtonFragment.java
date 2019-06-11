@@ -31,7 +31,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
     private View myView;
     private Button startButton;
     private Button stopButton;
-
+    private TextView statusTextView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,6 +41,7 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
         mPerfVolText = myView.findViewById(R.id.perf_vol_text);
         mPerfPlayText = myView.findViewById(R.id.perf_play_text);
         tcpClient = TCPCommunicator.getInstance();
+        statusTextView = myView.findViewById(R.id.status_text_view);
 
         // PLAY BUTTON
         mPerfPlayButton = (ImageButton) myView.findViewById(R.id.perf_play_button);

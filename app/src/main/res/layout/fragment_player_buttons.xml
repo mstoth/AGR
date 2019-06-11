@@ -47,6 +47,27 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Stop" />
+
+            <CheckBox
+                android:id="@+id/loopCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Loop" />
+
+            <CheckBox
+                android:id="@+id/playPlusCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Play+" />
+
+            <Button
+                android:id="@+id/volLimitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Vol. Limit" />
         </LinearLayout>
 
         <TextView
