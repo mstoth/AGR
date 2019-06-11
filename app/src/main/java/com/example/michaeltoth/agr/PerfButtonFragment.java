@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
     private int currentSong;
     private TextView mPerfPlayText;
     private View myView;
+    private Button startButton;
+    private Button stopButton;
 
     @Nullable
     @Override
@@ -99,6 +102,8 @@ public class PerfButtonFragment extends Fragment implements TCPListener{
             }
         });
 
+        startButton = myView.findViewById(R.id.playerStartButton);
+        stopButton = myView.findViewById(R.id.playerStopButton);
         tcpClient.addListener(this);
 
         TCPCommunicator.TCPWriterErrors e;

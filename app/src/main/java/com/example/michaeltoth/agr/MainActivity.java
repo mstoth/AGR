@@ -45,6 +45,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     private HymnBook hymnBook;
     private List<Fragment> fragmentList;
     private RecButtonFragment mRecButtonFragment;
+    private PlayerButtonFragment mPlayerButtonFragment;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -82,8 +83,14 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
 
     @Override
     public void onFragmentInteraction(String name, HymnBook hymnBook, WheelView wv) {
-        RecButtonFragment secondFragment = (RecButtonFragment) getSupportFragmentManager().findFragmentById(R.id.button_container);
-        secondFragment.updateName(name, hymnBook, wv);
+        if (getSupportFragmentManager().findFragmentById(R.id.button_container).getClass() == RecButtonFragment.class) {
+            RecButtonFragment secondFragment = (RecButtonFragment) getSupportFragmentManager().findFragmentById(R.id.button_container);
+            secondFragment.updateName(name, hymnBook, wv);
+        }
+        if (getSupportFragmentManager().findFragmentById(R.id.button_container).getClass() == PlayerButtonFragment.class) {
+            PlayerButtonFragment secondFragment = (PlayerButtonFragment) getSupportFragmentManager().findFragmentById(R.id.button_container);
+            secondFragment.updateName(name, hymnBook, wv);
+        }
     }
 
     @Override
@@ -199,9 +206,9 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         final String tag = "REC_FRAGMENT";
         tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
-        mRecButtonFragment = new RecButtonFragment();
+        mPlayerButtonFragment = new PlayerButtonFragment();
 
-        manager.beginTransaction().replace(R.id.button_container, mRecButtonFragment).commit();
+        manager.beginTransaction().replace(R.id.button_container, mPlayerButtonFragment).commit();
         manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -298,7 +305,12 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     @Override
     public void selectedTitleExists(Boolean exists) {
         Boolean titleExists = exists;
-        mRecButtonFragment.selectedRecordingExists(exists);
+        if (mRecButtonFragment != null) {
+            mRecButtonFragment.selectedRecordingExists(exists);
+        }
+        if (mPlayerButtonFragment != null) {
+            mPlayerButtonFragment.selectedRecordingExists(exists);
+        }
     }
 
 //                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);

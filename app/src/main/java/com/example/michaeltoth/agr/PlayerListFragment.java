@@ -137,7 +137,9 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                         if (currentSelection.length() > 0) {
                             int index = midiFiles.indexOf(currentSelection);
                             hymnsWheelView.setCurrentItem(index);
-                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + currentSelection + "\"}" ,
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + currentSelection + ".ZIP\"}" ,
+                                    UIHandler,getContext());
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
                                     UIHandler,getContext());
 
                         }
@@ -163,7 +165,9 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                 if (midiFiles.size()>item) {
                     String fname = midiFiles.get(item);
                     currentSelection = fname;
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + fname + "\"}" ,
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
+                            UIHandler,getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
                             UIHandler,getContext());
 //                    if (mListener != null) {
 //                        mListener.onFragmentInteraction(fname, hymnBook, hymnsWheelView);
@@ -191,7 +195,7 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 
 
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":4}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/WORK\"}", UIHandler,getContext());
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
         // tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}", UIHandler,getContext());
@@ -210,6 +214,13 @@ public class PlayerListFragment extends Fragment implements TCPListener{
             //fname = hymnBook.getRecordingArray()[0];
         } else {
             fname = midiFiles.get(item);
+            if (fname.length()>0) {
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
+                        UIHandler,getContext());
+                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+                        UIHandler,getContext());
+
+            }
         }
         if (mListener != null) {
             mListener.onFragmentInteraction(fname,hymnBook, hymnsWheelView);
