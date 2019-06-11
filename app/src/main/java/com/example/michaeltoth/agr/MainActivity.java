@@ -202,7 +202,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         mRecButtonFragment = new RecButtonFragment();
 
         manager.beginTransaction().replace(R.id.button_container, mRecButtonFragment).commit();
-        manager.beginTransaction().replace(R.id.list_container, new RecListFragment()).commit();
+        manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         int height=display.getHeight();
