@@ -228,12 +228,6 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     }
 
 
-        View view = findViewById(R.id.list_container);
-        ViewGroup.LayoutParams p = view.getLayoutParams();
-        int h = p.height;
-        p.height = (int)(height/3);
-        view.setLayoutParams(p);
-    }
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
         final JSONObject theMessage=message;
