@@ -51,6 +51,7 @@ public class PlayerListFragment extends Fragment implements TCPListener{
     private MainActivity mListener;
     private SharedViewModel model;
     private String oldName, newName;
+    private boolean playlistNeedsUpdating;
 
 //    public void changeName(String text) {
 //        int index = midiFiles.indexOf(text);
@@ -62,6 +63,7 @@ public class PlayerListFragment extends Fragment implements TCPListener{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hymn_list,container,false);
 
+        playlistNeedsUpdating = false;
         model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
         model.getOldName().observe(this,(name)->{
             oldName = name;
@@ -137,9 +139,8 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                         if (currentSelection.length() > 0) {
                             int index = midiFiles.indexOf(currentSelection);
                             hymnsWheelView.setCurrentItem(index);
+                            playlistNeedsUpdating = true;
                             tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + currentSelection + ".ZIP\"}" ,
-                                    UIHandler,getContext());
-                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
                                     UIHandler,getContext());
 
                         }
@@ -165,9 +166,8 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                 if (midiFiles.size()>item) {
                     String fname = midiFiles.get(item);
                     currentSelection = fname;
+                    playlistNeedsUpdating = true;
                     tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
-                            UIHandler,getContext());
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
                             UIHandler,getContext());
 //                    if (mListener != null) {
 //                        mListener.onFragmentInteraction(fname, hymnBook, hymnsWheelView);
@@ -215,10 +215,11 @@ public class PlayerListFragment extends Fragment implements TCPListener{
         } else {
             fname = midiFiles.get(item);
             if (fname.length()>0) {
+                playlistNeedsUpdating = true;
                 tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
                         UIHandler,getContext());
-                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
-                        UIHandler,getContext());
+//                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+//                        UIHandler,getContext());
 
             }
         }
@@ -329,6 +330,14 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 //                }
 //            }
 
+            if (messageTypeString.equals("GACK")) {
+                if (playlistNeedsUpdating) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+                            UIHandler,getContext());
+                    playlistNeedsUpdating = false;
+                }
+
+            }
             if (messageTypeString.equals("CPPP")) {
                 final String messageSubTypeString=theMessage.getString("mstype");
                 final boolean hasSel;
@@ -343,29 +352,38 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 //                        }
 //                    });
 //                }
+//                if (messageSubTypeString.equals("sequencer_playlist_name")) {
+//                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+//                            UIHandler,getContext());
+//
+//                }
                 if (messageSubTypeString.equals("media_dir_list")) {
-                    int i;
                     mediaDirList.clear();
                     JSONArray a = theMessage.getJSONArray("value");
+                    hymnBook.setPlaylists(a);
                     final ArrayList<String> mMidiFiles;
                     mMidiFiles = new ArrayList<String>();
                     mMidiFiles.clear();
                     midiFiles.clear();
                     int alen = a.length();
-
-                    for (i=0; i<alen; i++) {
-                        String s = a.getString(i);
-                        if (s.contains(".zip") || s.contains(".ZIP")) {
-                            mediaDirList.add(s);
-                            midiFiles.add(s);
-                        }
+                    String[] pl = hymnBook.getPlaylistArray();
+                    for (int i=0; i<pl.length; i++) {
+                        midiFiles.add(pl[i]);
+                        mediaDirList.add(pl[i]);
                     }
+//                    for (i=0; i<alen; i++) {
+//                        String s = a.getString(i);
+//                        if (s.contains(".zip") || s.contains(".ZIP")) {
+//                            mediaDirList.add(s);
+//                            midiFiles.add(s);
+//                        }
+//                    }
                     Collections.sort(midiFiles);
 //                    final ArrayList<String> mMidiFiles;
 //                    mMidiFiles = new ArrayList<String>();
 //                    mMidiFiles.clear();
 //                    midiFiles.clear();
-                    hymnBook.setRecordings(theMessage.getJSONArray("value"));
+//                    hymnBook.setRecordings(theMessage.getJSONArray("value"));
 //                    for (i=0;i<hymnBook.getRecArray().length;i++) {
 //                        String s = hymnBook.getRecArray()[i];
 //                        mediaDirList.add(s);
@@ -375,6 +393,7 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                         @Override
                         public void run() {
                             WheelView wv = hymnsWheelView;
+
                             HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
                             hymnsWheelView.setViewAdapter(adapter);
                             //String[] r = hymnBook.getRecordingArray();
@@ -387,6 +406,11 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                             } else {
                                 updateHymns(hymnsWheelView, hymnBook, 0);
                             }
+                            String fname;
+                            fname = hymnBook.getPlaylistArray()[0];
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
+                                    UIHandler,getContext());
+
                             wv.invalidate();
                         }
                     });
@@ -398,6 +422,34 @@ public class PlayerListFragment extends Fragment implements TCPListener{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+    }
+
+    private void updatePlaylists(final WheelView hymnWheelView, HymnBook hbook, int index) {
+        final HymnBook hb = hbook;
+        final int idx = index;
+        final WheelView wv = hymnWheelView;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
+                adapter.setTextSize(18);
+                wv.setViewAdapter(adapter);
+                int  index = midiFiles.indexOf(currentSelection);
+                if (index < 0) {
+                    index = hymnWheelView.getCurrentItem();
+                }
+                hymnWheelView.setCurrentItem(index);
+                if (index < midiFiles.size()) {
+                    String str = midiFiles.get(index);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + str + "\"}",
+                            UIHandler, getContext());
+
+                }
+
+            }
+        });
+
 
     }
 

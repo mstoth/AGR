@@ -16,8 +16,9 @@ public class HymnBook {
     private List<Hymn> mHymns;
     private List<Hymn> mPerfs;
     private List<Hymn> mRecs;
-    private ArrayList<String> mRecordings;
 
+    private ArrayList<String> mRecordings;
+    private ArrayList<String> mPlaylists;
     private ArrayList<String> hymnArrayList;
     private ArrayList<String> perfArrayList;
     private ArrayList<String> recArrayList;
@@ -33,6 +34,7 @@ public class HymnBook {
         mHymns = new ArrayList<>();
         mPerfs = new ArrayList<>();
         mRecs = new ArrayList<>();
+        mPlaylists = new ArrayList<String>();
         recArrayList = new ArrayList<String>();
         mRecordings = new ArrayList<>();
         hymnArrayList = new ArrayList<String>();
@@ -93,6 +95,29 @@ public class HymnBook {
         }
 
     }
+
+    public void setPlaylists(JSONArray playListArray) {
+        if (playListArray != null) {
+            mPlaylists.clear();
+            for (int i=0; i<playListArray.length(); i++) {
+                String s;
+                s = "";
+                try {
+                    s = (String) playListArray.get(i);
+                } catch (JSONException e) {
+                    Log.e("ERROR","JSONERROR ",e);
+                }
+                if (s.contains(".ZIP") || s.contains(".zip")) {
+                    try {
+                        mPlaylists.add((String) playListArray.get(i));
+                    } catch (JSONException e) {
+                        Log.e("ERROR","JSON ERROR ",e);
+                    }
+                }
+            }
+        }
+    }
+
 
     public void setRecordings(JSONArray recArray) {
         if (recArray != null) {
@@ -161,6 +186,15 @@ public class HymnBook {
     public ArrayList<String> getRecArrayList() {
         return recArrayList;
     }
+
+    public String[] getPlaylistArray() {
+        String[] hArray = new String[mPlaylists.size()];
+        for (int i=0; i<mPlaylists.size(); i++) {
+            hArray[i]=mPlaylists.get(i);
+        }
+        return hArray;
+    }
+
 
     public String[] getHymnArray() {
         String[] hArray = new String[mHymns.size()];

@@ -221,6 +221,12 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                 if (messageSubTypeString.equals("media_dir_list")) {
                     //model.setSelectedName(selectedName);
                 }
+                if (messageSubTypeString.equals("sequencer_playlist_name")) {
+                    //model.setSelectedName(selectedName);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+                            UIHandler,getContext());
+
+                }
 
                 if (messageSubTypeString.equals("sequencer_playlist_get")) {
                     JSONObject playlist = obj.getJSONObject("value");
@@ -246,7 +252,14 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                             String[] simpleArray = new String[ myDataset.size() ];
                             myDataset.toArray( simpleArray );
                             mAdapter = new MyAdapter(simpleArray);
+                            String s;
+                            if (simpleArray.length>0) {
+                                s = simpleArray[0];
+                                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + s + "\"}",
+                                        UIHandler, getContext());
+                            }
                             recyclerView.setAdapter(mAdapter);
+
                         }
                     });
 

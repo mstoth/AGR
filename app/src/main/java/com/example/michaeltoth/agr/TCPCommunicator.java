@@ -101,7 +101,7 @@ public class TCPCommunicator {
                 try {
                     out.write(msg);
                     out.flush();
-                    // Log.i("TcpClient", "sent: " + msg);
+                    Log.i("TcpClient", "sent: " + msg);
 
                 } catch(final Exception e) {
                     UIHandler.post(new Runnable() {
