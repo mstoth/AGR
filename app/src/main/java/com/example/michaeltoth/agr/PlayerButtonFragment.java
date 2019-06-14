@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,7 +20,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,42 +37,36 @@ import java.util.List;
 
 
 public class PlayerButtonFragment extends Fragment implements TCPListener,
-        IPlayerButtonFragment, EditNameDialogFragment.EditNameDialogListener {
+        IPlayerButtonFragment {
     private boolean remoteActive;
-    private boolean selectionExists;
+    private boolean selectionChanged;
     private View myView;
     private Button playButton;
     private Handler UIHandler = new Handler();
     private HymnBook hymnBook;
     private boolean scrolling = false;
     private TCPCommunicator tcpClient = TCPCommunicator.getInstance();
-    private Button recordButton, stopButton, deleteButton, renameButton;
-    private TextView counterTextView, statusTextView;
+    private Button stopButton;
+    private ImageButton volUpButton, volDownButton;
+
+    private CheckBox playPlusCheckBox;
+    private CheckBox loopCheckBox;
+    private TextView statusTextView;
+    private TextView counterTextView;
+    private EditText volumeText;
     private String currentSelection;
-    private ArrayList<String> mediaDirList;
-    private ArrayList<String> midiFiles;
-    private ArrayList<String> titles;
+    private int currentSelectionNumber;
     WheelView hymnsWheelView;
-    private IMainActivity mIMainActivity;
     private String selectedName = "";
     private MainActivity mListener;
-    private boolean songNamesMatch;
-    private boolean waitForSequencerToStop;
-    private String songNameToMatch;
-    private boolean recordWhenSongNamesMatch,refreshWheel;
     static final int RENAME_DIALOG_ID = 0;
-    private boolean sequencerStopped = true;
     private SharedViewModel model;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<String> myDataset = new ArrayList<String>();
-
-//    NameChanged mCallBack;
-//    public interface NameChanged {
-//        public void sendName(String name);
-//    }
-
+    private int volLimit;
+    private TextView tempoAdjustText;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,31 +91,6 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         }
     }
 
-    private View getRenammeView() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.content_rename,(ViewGroup) myView.findViewById(R.id.rename_content));
-        return view;
-    }
-
-    public void onFinishEditDialog(String s) {
-        Log.d("DEBUG","In onFinishEditDialog");
-
-        if (s.contains(".mid") || s.contains(".MID")) {
-            // don't add .mid
-        } else {
-            s=s+".MID";
-        }
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_rename\",\"value\":\"" +
-                        selectedName + "\",\"value2\":\"" + s + "\"}",
-                UIHandler, getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + s + "\"}",
-                UIHandler, getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
-
-        hymnsWheelView.invalidateWheel(true);
-    }
-
-
 
     @Nullable
     @Override
@@ -126,10 +98,7 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         View view = inflater.inflate(R.layout.fragment_player_buttons,container,false);
         remoteActive = false;
         myView = view;
-        refreshWheel = true;
-        waitForSequencerToStop = false;
-//        startButton = (Button) myView.findViewById(R.id.start_button);
-
+        selectionChanged = false;
         LayoutInflater inflater2 = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View renamelayout = inflater2.inflate(R.layout.content_rename,(ViewGroup) myView.findViewById(R.id.rename_content));
 
@@ -138,6 +107,14 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         stopButton = view.findViewById(R.id.playerStopButton);
         playButton = view.findViewById(R.id.playerStartButton);
         statusTextView = view.findViewById(R.id.status_text_view);
+        counterTextView = view.findViewById(R.id.counter_text_view);
+        volDownButton = view.findViewById(R.id.volumeDownButton);
+        volUpButton = view.findViewById(R.id.volumeUpButton);
+        volumeText = view.findViewById(R.id.volumeLimitText);
+        playPlusCheckBox = view.findViewById(R.id.playPlusCheckBox);
+        loopCheckBox = view.findViewById(R.id.loopCheckBox);
+        tempoAdjustText = view.findViewById(R.id.player_tempo_text);
+
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,16 +125,77 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}",UIHandler,getContext());
+                if (playButton.getText().equals("Play")) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"play\"}",UIHandler,getContext());
+                }
+                if (playButton.getText().equals("Pause")) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"pause\"}",UIHandler,getContext());
+                }
+                if (playButton.getText().equals("Continue")) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"unpause\"}",UIHandler,getContext());
+                }
             }
         });
-        tcpClient = TCPCommunicator.getInstance();
 
+        loopCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (loopCheckBox.isChecked()) {
+                    playPlusCheckBox.setChecked(true);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":true}", UIHandler, getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_loop\",\"value\":true}", UIHandler, getContext());
+                } else {
+                    playPlusCheckBox.setChecked(false);
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":false}", UIHandler, getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_loop\",\"value\":false}", UIHandler, getContext());
+                }
+            }
+        });
+
+        volUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (volLimit == 10) {
+                    return;
+                } else {
+                    volLimit = volLimit + 1;
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\",\"value\":" + volLimit +  "}", UIHandler, getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\"}", UIHandler, getContext());
+                }
+            }
+        });
+
+        volDownButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (volLimit == 1 )  {
+                    return;
+                }  else {
+                    volLimit = volLimit - 1;
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\",\"value\":" + volLimit +  "}", UIHandler, getContext());
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\"}", UIHandler, getContext());
+                }
+            }
+        });
+        playPlusCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (playPlusCheckBox.isChecked()) {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":true}", UIHandler, getContext());
+                } else {
+                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":false}", UIHandler, getContext());
+                }
+            }
+        });
+
+
+
+        tcpClient = TCPCommunicator.getInstance();
         tcpClient.addListener(this);
 
         TCPCommunicator.TCPWriterErrors e;
         e=tcpClient.writeStringToSocket("{\"mtype\":\"GIRQ\"}",UIHandler,getContext());
-        if (e== TCPCommunicator.TCPWriterErrors.otherProblem) {
+        if (e == TCPCommunicator.TCPWriterErrors.otherProblem) {
             // no connection
             Toast.makeText(getContext(),"No Connection to Organ...",Toast.LENGTH_SHORT).show();
             tcpClient.init("192.168.1.4",10002);
@@ -165,14 +203,25 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         }
 
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_remote_active\"}",UIHandler,getContext());
-        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":3}", UIHandler,getContext());
-        //tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_number\"}",UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"seqeng_mode\",\"value\":4}", UIHandler,getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\"}", UIHandler, getContext());
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"playlist_volume_limit\"}", UIHandler, getContext());
+
+        if (playPlusCheckBox.isChecked()) {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":true}", UIHandler, getContext());
+        } else {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_plus\",\"value\":false}", UIHandler, getContext());
+        }
+        if (loopCheckBox.isChecked()) {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_loop\",\"value\":true}", UIHandler, getContext());
+        } else {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_loop\",\"value\":false}", UIHandler, getContext());
+        }
 
         recyclerView = (RecyclerView) view.findViewById(R.id.player_recycler_view);
-
         recyclerView.setHasFixedSize(true);
 
-//        // use a linear layout manager
+//      use a linear layout manager
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
@@ -180,7 +229,6 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         myDataset.toArray( simpleArray );
         mAdapter = new MyAdapter(simpleArray);
         recyclerView.setAdapter(mAdapter);
-
         return view;
     }
 
@@ -190,24 +238,6 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
         outState.putAll(outState);
     }
 
-    public void updateName(String name, HymnBook hBook, WheelView wv) {
-        selectedName = name;
-        hymnBook = hBook;
-        String[] mfiles = hymnBook.getRecordingArray();
-
-//        if (midiFiles != null) {
-//            midiFiles.clear();
-//            String[] mfiles = hymnBook.getRecordingArray();
-//            for (String s : mfiles) {
-//                midiFiles.add(s);
-//            }
-//        }
-        hymnsWheelView = wv;
-
-        if (selectedName.length()>0) {
-            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + selectedName + "\"}", UIHandler, getContext());
-        }
-    }
 
     @Override
     public void onTCPMessageRecieved(JSONObject message) {
@@ -244,7 +274,29 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                         }
                         myDataset.add(fileNameWithoutSuffix);
                         String tempoAdjust = file.getString("tempo_adjust");
+                        if (tempoAdjust != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tempoAdjustText.setText("Tempo Adjust: " + tempoAdjust);
+                                }
+                            });
+
+                        }
                     }
+                    if (myDataset.isEmpty()) {
+                        return;
+                    }
+                    currentSelection = myDataset.get(0);
+                    currentSelectionNumber = 0;
+                     mAdapter.setSelectedSong(currentSelection + ".MID");
+                     mAdapter.setSelectedSongNumber(0);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
 
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -252,13 +304,16 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                             String[] simpleArray = new String[ myDataset.size() ];
                             myDataset.toArray( simpleArray );
                             mAdapter = new MyAdapter(simpleArray);
+                            ((MyAdapter) mAdapter).setSelectedSong(currentSelection + ".MID");
+                            mAdapter.setSelectedSongNumber(currentSelectionNumber);
                             String s;
                             if (simpleArray.length>0) {
                                 s = simpleArray[0];
-                                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + s + "\"}",
+                                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + s + ".MID\"}",
                                         UIHandler, getContext());
                             }
                             recyclerView.setAdapter(mAdapter);
+                            mAdapter.notifyDataSetChanged();
 
                         }
                     });
@@ -271,7 +326,7 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                             @Override
                             public void run() {
                                 Toast.makeText(getActivity(),"Remote is not active.",Toast.LENGTH_SHORT).show();
-                                playButton = (Button) myView.findViewById(R.id.rec_play_button);
+                                playButton = (Button) myView.findViewById(R.id.playerStartButton);
                                 //playButton.setEnabled(false);
                             }
                         });
@@ -279,31 +334,41 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                 }
 
                 if (messageSubTypeString.equals("sequencer_song_name")) {
-                    String name;
+                    currentSelection = obj.getString("value");
+                    mAdapter.setSelectedSong(currentSelection);
 
-                    name = obj.getString("value");
-                    if (name.equals(songNameToMatch)) {
-                        songNamesMatch = true;
-                    } else {
-                        songNamesMatch = false;
-                    }
-                    if (recordWhenSongNamesMatch) {
-                        if (songNamesMatch) {
-                            tcpClient.writeStringToSocket("{\"mtype\":\"SEQR\",\"mstype\":\"record\"}", UIHandler,getContext());
-                            recordWhenSongNamesMatch = false;
-                            mListener.runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-
-                                    statusTextView.setText(R.string.recording);
-
-                                }
-                            });
-
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
                         }
-                    }
-                    model.setNewName(name);
+                    });
+
+                }
+
+                if (messageSubTypeString.equals("sequencer_song_number")) {
+                    currentSelectionNumber = obj.getInt("value") - 1;
+                    mAdapter.setSelectedSongNumber(currentSelectionNumber);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }
+
+                if (messageSubTypeString.equals("playlist_volume_limit")) {
+                    volLimit = obj.getInt("value");
+                    final String msg = "Volume Limit: " + volLimit;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            volumeText.setText(msg);
+                        }
+                    });
+
                 }
 
                 if (messageSubTypeString.equals("sequencer_measure")) {
@@ -311,73 +376,55 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            statusTextView.setText(msg);
+                            counterTextView.setText(msg);
                         }
                     });
                 }
 
                 if (messageSubTypeString.equals("seqeng_status")) {
                     final int status = obj.getInt("value");
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            switch (status) {
-//                                case 0: {
-//                                    // STOPPED
-//                                    statusTextView.setText("Stopped");
-//                                    playButton.setText("Play");
-//                                    playButton.setEnabled(true);
-//                                    recordButton.setEnabled(true);
-//                                    //recordButton.setEnabled(true);
-//                                    deleteButton.setEnabled(true);
-//                                    stopButton.setEnabled(false);
-//                                    hymnsWheelView.setEnabled(true);
-//                                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_current\",\"value\":\"/work\"}", UIHandler,getContext());
-//
-//                                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
-//                                    break;
-//                                }
-//                                case 1: {
-//                                    if (songNamesMatch) {
-//                                        statusTextView.setText("Recording " + songNameToMatch);
-//                                    } else {
-//                                        statusTextView.setText("Playing");
-//                                    }
-//                                    playButton.setEnabled(true);
-//                                    playButton.setText("Pause");
-//                                    recordButton.setEnabled(false);
-//                                    deleteButton.setEnabled(false);
-//                                    stopButton.setEnabled(true);
-//                                    hymnsWheelView.setEnabled(false);
-//
-//                                    break;
-//                                }
-//                                case 2: {
-//                                    statusTextView.setText("Seek Done");
-//                                    break;
-//                                }
-//                                case 3: {
-//                                    statusTextView.setText("Paused");
-//                                    playButton.setEnabled(false);
-//                                    recordButton.setEnabled(false);
-//                                    deleteButton.setEnabled(false);
-//                                    stopButton.setEnabled(true);
-//                                    playButton.setEnabled(true);
-//                                    hymnsWheelView.setEnabled(false);
-//
-//                                    break;
-//                                }
-//                                case 4: {
-//                                    statusTextView.setText("Transition");
-//                                    break;
-//                                }
-//                                default: {
-//                                    statusTextView.setText("Unknown");
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                    });
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (status) {
+                                case 0: {
+                                    // STOPPED
+                                    statusTextView.setText("Stopped");
+                                    playButton.setText("Play");
+                                    playButton.setEnabled(true);
+                                    stopButton.setEnabled(false);
+                                    break;
+                                }
+                                case 1: { // playing
+                                    playButton.setEnabled(true);
+                                    playButton.setText("Pause");
+                                    stopButton.setEnabled(true);
+                                    break;
+                                }
+                                case 2: {
+                                    statusTextView.setText("Seek Done");
+                                    break;
+                                }
+                                case 3: {
+                                    statusTextView.setText("Paused");
+                                    playButton.setText("Continue");
+
+                                    stopButton.setEnabled(true);
+                                    playButton.setEnabled(true);
+
+                                    break;
+                                }
+                                case 4: {
+                                    statusTextView.setText("Transition");
+                                    break;
+                                }
+                                default: {
+                                    statusTextView.setText("Unknown");
+                                    break;
+                                }
+                            }
+                        }
+                    });
 
                 }
             }
@@ -445,71 +492,30 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
 
     @Override
     public void selectedRecordingExists(Boolean exists) {
-
-        selectionExists = exists;
-        if (recordButton==null) {
-            return;
-        }
     }
 
-    private void deleteAlertView( final String name) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-        dialog.setTitle( "Deleting " + name ).setMessage("Are you sure you want to delete " + name + "?")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialoginterface, int i) { dialoginterface.cancel(); }})
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialoginterface, int i) {
-                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_delete\",\"value\":\"" +
-                                name + "\"}", UIHandler, getContext());
-                        currentSelection = null;
-//                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
-                        if (midiFiles != null) {
-                            midiFiles.remove(selectedName);
-                        }
-                        hymnBook.removeRecording(selectedName);
-
-                        if (mListener != null) {
-                            mListener.onFragmentInteraction(name);
-                        }
-
-                        selectedName = null;
-                        model.setNewName(null);
-                        if (midiFiles != null) {
-                            if (midiFiles.size() > 0) {
-                                String tFileName = midiFiles.get(0);
-                                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + tFileName + "\"}",
-                                        UIHandler, getContext());
-                                tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\"}",
-                                        UIHandler, getContext());
-                            }
-                        }
-//                    hymnsWheelView.scrollTo(0,0);
-                        recordButton.setEnabled(true);
-                        playButton.setEnabled(true);
-
-                        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"media_dir_list\"}", UIHandler,getContext());
-
-                    }
-
-                }).show();
-    }
 
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(String name);
     }
 
+    public void updateName(String name, HymnBook hBook, WheelView wv) {
+        selectedName = name;
+        hymnBook = hBook;
+        String[] mfiles = hymnBook.getRecordingArray();
 
-    private void showEditDialog(View layout) {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        String selectedNameWithoutSuffix;
-        selectedNameWithoutSuffix = selectedName.substring(0, selectedName.lastIndexOf('.'));
+//        if (midiFiles != null) {
+//            midiFiles.clear();
+//            String[] mfiles = hymnBook.getRecordingArray();
+//            for (String s : mfiles) {
+//                midiFiles.add(s);
+//            }
+//        }
+        hymnsWheelView = wv;
 
-        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance("Rename " + selectedNameWithoutSuffix, selectedNameWithoutSuffix);
-        //View v = editNameDialogFragment.getView();
-        EditText et = layout.findViewById(R.id.edit_text);
-        et.setText(selectedNameWithoutSuffix);
-        editNameDialogFragment.setTargetFragment(this,0);
-        editNameDialogFragment.show(fm, "fragment_edit_name");
+        if (selectedName.length()>0) {
+            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + selectedName + "\"}", UIHandler, getContext());
+        }
     }
 
 

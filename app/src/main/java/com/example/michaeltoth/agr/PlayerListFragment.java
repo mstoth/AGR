@@ -223,9 +223,9 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 
             }
         }
-        if (mListener != null) {
-            mListener.onFragmentInteraction(fname,hymnBook, hymnsWheelView);
-        }
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(fname,hymnBook, hymnsWheelView);
+//        }
 
 //        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 //        Display display = wm.getDefaultDisplay();
@@ -235,6 +235,8 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 //        p.height  = (int)(height/3);
 //        view.setLayoutParams(p);
 
+        tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
+                UIHandler,getContext());
         return view;
     }
     private void ConnectToServer() {
@@ -400,17 +402,18 @@ public class PlayerListFragment extends Fragment implements TCPListener{
                             if (newName != null && newName.length()>0) {
                                 int index = midiFiles.indexOf(newName);
                                 if (index >= 0) {
-                                    updateHymns(hymnsWheelView, hymnBook, index);
+                                    // updateHymns(hymnsWheelView, hymnBook, index);
                                 }
 
                             } else {
-                                updateHymns(hymnsWheelView, hymnBook, 0);
+                                // updateHymns(hymnsWheelView, hymnBook, 0);
                             }
                             String fname;
+                            wv.setCurrentItem(0);
                             fname = hymnBook.getPlaylistArray()[0];
                             tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + fname + "\"}" ,
                                     UIHandler,getContext());
-
+                            tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\"}", UIHandler, getContext());
                             wv.invalidate();
                         }
                     });
@@ -457,26 +460,26 @@ public class PlayerListFragment extends Fragment implements TCPListener{
         final HymnBook hb = hbook;
         final int idx = index;
         final WheelView wv = hymnWheelView;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
-                adapter.setTextSize(18);
-                wv.setViewAdapter(adapter);
-                int  index = midiFiles.indexOf(currentSelection);
-                if (index < 0) {
-                    index = hymnWheelView.getCurrentItem();
-                }
-                hymnWheelView.setCurrentItem(index);
-                if (index < midiFiles.size()) {
-                    String str = midiFiles.get(index);
-                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_song_name\",\"value\":\"" + str + "\"}",
-                            UIHandler, getContext());
-
-                }
-
-            }
-        });
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                HymnAdapter4 adapter = new HymnAdapter4(getContext(),hymnBook);
+//                adapter.setTextSize(18);
+//                wv.setViewAdapter(adapter);
+//                int  index = midiFiles.indexOf(currentSelection);
+//                if (index < 0) {
+//                    index = hymnWheelView.getCurrentItem();
+//                }
+//                hymnWheelView.setCurrentItem(index);
+//                if (index < midiFiles.size()) {
+//                    String str = midiFiles.get(index);
+//                    tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_name\",\"value\":\"" + str + "\"}",
+//                            UIHandler, getContext());
+//
+//                }
+//
+//            }
+//        });
     }
 
 

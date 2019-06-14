@@ -210,7 +210,7 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
     }
 
     public void switchToPlayerFragment() {
-        final String tag = "REC_FRAGMENT";
+        final String tag = "PLAYER_FRAGMENT";
         tcpClient.removeAllListeners();
         FragmentManager manager = getSupportFragmentManager();
         mPlayerButtonFragment = new PlayerButtonFragment();
