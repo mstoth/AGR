@@ -65,8 +65,10 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<String> myDataset = new ArrayList<String>();
+    private List<String> tempoList = new ArrayList<String>();
     private int volLimit;
     private TextView tempoAdjustText;
+    private String tempoAdjust;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -262,6 +264,7 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                     JSONObject playlist = obj.getJSONObject("value");
                     JSONArray files = playlist.getJSONArray("playlist");
                     myDataset.clear();
+                    tempoList.clear();
                     for (int i = 0; i < files.length(); i++) {
                         JSONObject file = files.getJSONObject(i);
                         String fileName = file.getString("file");
@@ -273,8 +276,9 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                             fileNameWithoutSuffix = fileName.replace(".MID","");
                         }
                         myDataset.add(fileNameWithoutSuffix);
-                        String tempoAdjust = file.getString("tempo_adjust");
+                        tempoAdjust = file.getString("tempo_adjust");
                         if (tempoAdjust != null) {
+                            tempoList.add(tempoAdjust);
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -282,6 +286,8 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                                 }
                             });
 
+                        } else {
+                            tempoList.add("0");
                         }
                     }
                     if (myDataset.isEmpty()) {
@@ -373,6 +379,25 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
 
                 if (messageSubTypeString.equals("sequencer_measure")) {
                     final String msg = "Measure: " + obj.getInt("value");
+                    if (obj.getInt("value") == 0) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (tempoList.get(currentSelectionNumber).equals("0")) {
+                                    // clear tempo indicator
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            tempoAdjustText.setText("");
+                                        }
+                                    });
+
+                                } else {
+                                    tempoAdjustText.setText("Tempo Adj: " + tempoList.get(currentSelectionNumber));
+                                }
+                            }
+                        });
+                    }
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
