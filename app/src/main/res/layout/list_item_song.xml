@@ -12,7 +12,7 @@
         android:id="@+id/song_title"
         android:textStyle="bold"
         android:textColor="#F000"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:text="Selection"/>
 
 </LinearLayout>

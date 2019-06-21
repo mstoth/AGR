@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/fragment_player_buttons"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3sp"
+        android:layout_marginLeft="3sp"
+        android:layout_marginTop="3sp"
+        android:layout_marginEnd="3sp"
+        android:layout_marginRight="3sp"
+        android:layout_marginBottom="3sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8sp">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/player_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="120sp"
+            android:background="#00C47373"
+            android:padding="20sp"
+            android:paddingLeft="20sp"
+            android:paddingTop="20sp"
+            android:paddingRight="20sp"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/volumeLimitText"
+                android:layout_width="126dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Volume normal:"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/volumeUpButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/upt" />
+
+            <ImageButton
+                android:id="@+id/volumeDownButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/downt" />
+
+            <TextView
+                android:id="@+id/player_tempo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tempo Adjust:"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/playerStartButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Play" />
+
+            <Button
+                android:id="@+id/playerStopButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/counter_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/status_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/loopCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Loop" />
+
+            <CheckBox
+                android:id="@+id/playPlusCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Play+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

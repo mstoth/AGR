@@ -383,6 +383,9 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (tempoList.isEmpty()) {
+                                    return;
+                                }
                                 if (tempoList.get(currentSelectionNumber).equals("0")) {
                                     // clear tempo indicator
                                     getActivity().runOnUiThread(new Runnable() {

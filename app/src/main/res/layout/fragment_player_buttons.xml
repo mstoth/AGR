@@ -15,6 +15,10 @@
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Large"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/player_recycler_view"
@@ -43,7 +47,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Volume Limit:" />
+                android:text="Volume :" />
 
             <ImageButton
                 android:id="@+id/volumeUpButton"
@@ -98,7 +102,7 @@
                 android:id="@+id/player_tempo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24dp"
+                android:textSize="14dp"
                 android:layout_weight="1"
                 android:text="Tempo Adjust:" />
         </LinearLayout>
