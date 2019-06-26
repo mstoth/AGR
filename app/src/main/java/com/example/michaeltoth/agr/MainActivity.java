@@ -219,12 +219,18 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
-        int height=display.getHeight();
+//        int height=display.getHeight();
         View view = findViewById(R.id.list_container);
         ViewGroup.LayoutParams p = view.getLayoutParams();
         int h = p.height;
-        p.height  = (int)(height/4);
+        p.height  = (int)(h/3);
         view.setLayoutParams(p);
+        view = findViewById(R.id.button_container);
+        p = view.getLayoutParams();
+        h = p.height;
+        p.height  = (int)(2*h/3);
+        view.setLayoutParams(p);
+
     }
 
 

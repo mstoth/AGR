@@ -229,10 +229,10 @@ public class PlayerListFragment extends Fragment implements TCPListener{
 
 //        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 //        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
+//        //int height=display.getHeight();
 //        ViewGroup.LayoutParams p = view.getLayoutParams();
 //        int h = p.height;
-//        p.height  = (int)(height/3);
+//        p.height  = (int)(h/3);
 //        view.setLayoutParams(p);
 
         tcpClient.writeStringToSocket("{\"mtype\":\"CPPP\",\"mstype\":\"sequencer_playlist_get\"}" ,
