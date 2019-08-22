@@ -367,7 +367,7 @@ public class PlayerButtonFragment extends Fragment implements TCPListener,
 
                 if (messageSubTypeString.equals("playlist_volume_limit")) {
                     volLimit = obj.getInt("value");
-                    final String msg = "Volume Limit: " + volLimit;
+                    final String msg = "Volume: " + volLimit;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
