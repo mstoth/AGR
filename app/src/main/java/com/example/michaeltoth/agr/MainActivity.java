@@ -131,12 +131,10 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
             tcpClient.setServerHost("192.168.1.4");
             tcpClient.setServerPort(10002);
             ConnectToServer();
-            tcpClient.addListener(this);
-        } else {
-            tcpClient.addListener(this);
-            TCPCommunicator.writeStringToSocket("{\"mtype\":\"GIRQ\"}\n",UIHandler,getApplicationContext());
         }
-
+        tcpClient.addListener(this);
+        TCPCommunicator.writeStringToSocket("{\"mtype\":\"GIRQ\"}\n",UIHandler,getApplicationContext());
+        switchToHomeFragment();
 
     }
 
@@ -171,24 +169,6 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         ViewGroup.LayoutParams lp = v.getLayoutParams();
         lp.height = WRAP_CONTENT;
         v.setLayoutParams(lp);
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(h/3);
-//        view.setLayoutParams(p);
-//        view = findViewById(R.id.button_container);
-//        p = view.getLayoutParams();
-//        h = p.height;
-//        p.height  = (int)(2*h/3);
-//        view.setLayoutParams(p);
-//        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/5);
-//        view.setLayoutParams(p);
     }
 
     public void switchToPerfFragment() {
@@ -200,25 +180,6 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         ViewGroup.LayoutParams lp = v.getLayoutParams();
         lp.height = WRAP_CONTENT;
         v.setLayoutParams(lp);
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(h/3);
-//        view.setLayoutParams(p);
-//        view = findViewById(R.id.button_container);
-//        p = view.getLayoutParams();
-//        h = p.height;
-//        p.height  = (int)(2*h/3);
-//        view.setLayoutParams(p);
-
-//        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/4);
-//        view.setLayoutParams(p);
     }
 
     public void switchToRecFragment() {
@@ -233,25 +194,6 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         ViewGroup.LayoutParams lp = v.getLayoutParams();
         lp.height = WRAP_CONTENT;
         v.setLayoutParams(lp);
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(h/3);
-//        view.setLayoutParams(p);
-//        view = findViewById(R.id.button_container);
-//        p = view.getLayoutParams();
-//        h = p.height;
-//        p.height  = (int)(2*h/3);
-//        view.setLayoutParams(p);
-
-//        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(height/3.3);
-//        view.setLayoutParams(p);
     }
 
     public void switchToPlayerFragment() {
@@ -264,21 +206,10 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
         manager.beginTransaction().replace(R.id.list_container, new PlayerListFragment()).commit();
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
-//        int height=display.getHeight();
         View v = findViewById(R.id.list_container);
         ViewGroup.LayoutParams lp = v.getLayoutParams();
         lp.height = WRAP_CONTENT;
         v.setLayoutParams(lp);
-//        View view = findViewById(R.id.list_container);
-//        ViewGroup.LayoutParams p = view.getLayoutParams();
-//        int h = p.height;
-//        p.height  = (int)(h/3);
-//        view.setLayoutParams(p);
-//        view = findViewById(R.id.button_container);
-//        p = view.getLayoutParams();
-//        h = p.height;
-//        p.height  = (int)(2*h/3);
-//        view.setLayoutParams(p);
 
     }
 
@@ -298,12 +229,10 @@ public class MainActivity extends DoubleFragmentActivity implements IMainActivit
                     @Override
                     public void run() {
                         try {
-                            String s = theMessage.getString("copyright");
                             mHomeTextView = findViewById(R.id.home_text_view);
-                            mHomeTextView.setText(s);
 
                             String versionName = BuildConfig.VERSION_NAME;
-                            versionName = mHomeTextView.getText() + " Version: " + versionName;
+                            versionName = msg + " Version: " + versionName;
                             mHomeTextView.setText(versionName);
 
                             View v = findViewById(R.id.list_container);
